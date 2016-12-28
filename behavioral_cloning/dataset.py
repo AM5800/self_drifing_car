@@ -49,7 +49,7 @@ class DatasetProvider:
         return convert_dataset(converter, data)
 
     def get_shape(self, name):
-        return self.__datasets[name].train[0].shape
+        return self.__datasets[name].x_train[0].shape
 
     def get_dataset_names(self):
         return self.__datasets.keys()
