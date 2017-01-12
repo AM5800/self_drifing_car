@@ -44,6 +44,8 @@ With grid search I optimized:
 * dropout
 * use of batch normalization
 
+I am not using **fit_generator** because on my machine all images can freely fit to memory. And it is much faster than reload them on each epoch
+
 ## Anti-overfitting measures
 Dropout and BatchNormalization are used to reduce overfitting. 
 BatchNormalization also helps to speed up covergence.
