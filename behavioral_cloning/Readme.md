@@ -43,6 +43,7 @@ With grid search I optimized:
 * network architecture
 * dropout
 * use of batch normalization
+* dataset augmentation method
 
 I am not using **fit_generator** because on my machine all images can freely fit to memory. And it is much faster than reload them on each epoch
 
