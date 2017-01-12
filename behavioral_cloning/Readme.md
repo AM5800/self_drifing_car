@@ -22,6 +22,10 @@ While recording is off, move to the road edge. Then enable recording and immedia
 
 Total images in train set: **3036**
 
+![Training data example](trainset_example.jpg)
+
+Above is an example of recovery as seen by central camera
+
 ### Validation data
 Validation data is also generated with the simulator. But I was driving in reverse direction.
 If I were driving in the same direction - I would have a high chance to obtain very similar images in train and validation set. 
@@ -31,6 +35,8 @@ No recovery maneuvers were executed in validation set. Only riding in the center
 
 Total images in validation set: **6045**
 Validation set is made larger to be able to better control changes in validation accuracy.
+
+![Validation data example](validation_example.jpg)
 
 ## Training
 So far I have tried 2 network architectures. 
