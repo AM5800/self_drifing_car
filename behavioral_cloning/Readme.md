@@ -35,6 +35,7 @@ Validation set is made larger to be able to better control changes in validation
 ## Training
 So far I have tried 2 network architectures. 
 First is AlexNet-like network and second is VGG-like. 
+Both networks are not "100% as described in original papers". They are rather look like AlexNet and VGG. But for simplicity I will refer to them as AlexNet and VGG further.
 
 To find best network architecture and hyperparameters I used grid search.
 With grid search I optimized:
@@ -44,8 +45,19 @@ With grid search I optimized:
 * use of batch normalization
 
 ## Anti-overfitting measures
-I used dropout and BatchNormalization combined. 
+Dropout and BatchNormalization are used to reduce overfitting. 
+BatchNormalization also helps to speed up covergence.
 
 ## Final network description
+AlexNet and VGG showed comparable results on validation dataset. But AlexNet runs up to 3 times faster. And model performance is very important in such real-time task as car driving. So I am using AlexNet further.
 
+With grid I have found that best results are achieved when BatchNormalization os turned on and dropout is set to 0.7
+
+AlexNet consists of 4 Convolution layers, each followed by BN, relu and max pool layers.
+After that goes one hidden layer with batch normalization, relu and dropout.
+And final layer is a single value - predicted steering angle.
+
+I use Adam optimizer and **mean square error** as loss function
+
+## Conclusion
 
