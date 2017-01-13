@@ -8,6 +8,7 @@ import copy
 from keras import backend as kb
 import time
 from dataset import dataset_provider, Dataset
+from keras.utils.visualize_util import plot
 
 
 # Reads driving log and loads center image + steering angle
@@ -57,47 +58,42 @@ def save_model(model, dataset_name, name):
 
 
 # Defines AlexNet-like network
-# With 4 Convolution layers (Conv2d -> BN -> relu -> MaxPool)
-# And 2 Fully-connected layers
+# With 4 Convolution layers (Conv2d -> relu -> BN -> MaxPool)
+# And 3 Fully-connected layers
 def alexnet(input_shape, dropout, use_bn):
     model = Sequential()
-    model.add(Conv2D(32, 3, 3, input_shape=input_shape))
 
+    model.add(Conv2D(32, 3, 3, activation="relu", input_shape=input_shape))
     if use_bn:
         model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(3, 3)))
 
-    model.add(Activation("relu"))
+    model.add(Conv2D(64, 3, 3, activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(3, 3)))
+
+    model.add(Conv2D(128, 3, 3, activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
     model.add(MaxPooling2D())
-    model.add(Conv2D(64, 3, 3))
 
+    model.add(Conv2D(256, 3, 3, activation="relu"))
     if use_bn:
         model.add(BatchNormalization())
-
-    model.add(Activation("relu"))
-    model.add(MaxPooling2D())
-    model.add(Conv2D(128, 3, 3))
-
-    if use_bn:
-        model.add(BatchNormalization())
-
-    model.add(Activation("relu"))
-    model.add(MaxPooling2D())
-    model.add(Conv2D(256, 3, 3))
-
-    if use_bn:
-        model.add(BatchNormalization())
-
-    model.add(Activation("relu"))
     model.add(MaxPooling2D())
 
     model.add(Flatten())
 
-    model.add(Dense(1000))
+    print(model.layers[-1].output_shape)
 
+    model.add(Dense(1024, activation="relu"))
     if use_bn:
         model.add(BatchNormalization())
 
-    model.add(Activation("relu"))
+    model.add(Dense(256, activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
 
     model.add(Dropout(dropout))
 
@@ -196,11 +192,11 @@ def add_to_grid(name, values):
     grid = new_grid
 
 
-add_to_grid("lr", [0.0001, 0.00001, 0.001])
-add_to_grid("dropout", [1.0, 0.5, 0.7, 0.3])
-add_to_grid("bn", [True, False])
+add_to_grid("lr", [0.0001, 0.01, 0.00001])
+add_to_grid("dropout", [0.5, 0.3, 0.7, 0.65, 0.75, 0.0])
+add_to_grid("bn", [True])
 add_to_grid("dataset", ["original", "hsv"])
-add_to_grid("F", [vgg, alexnet])
+add_to_grid("F", [alexnet])
 
 best_val_loss = 100
 # Grid node with the least validation loss will be saved in this variable
@@ -208,7 +204,7 @@ best_node = None
 
 for i in range(len(grid)):
     node = grid[i]
-    node["grid"] = i + 1
+    node["grid"] = "{0}/{1}".format(i + 1, len(grid))
 
     print(node)
 
@@ -222,6 +218,7 @@ for i in range(len(grid)):
     dataset_shape = dataset_provider.get_shape(dataset_name)
 
     model = F(dataset_shape, dropout, bn)
+    print(model.count_params())
 
     model.compile(loss='mse',
                   optimizer='adam',
@@ -230,7 +227,7 @@ for i in range(len(grid)):
     t0 = time.time()
 
     model.fit(dataset.X_train, dataset.y_train,
-              batch_size=10, nb_epoch=1,
+              batch_size=10, nb_epoch=10,
               verbose=0)
 
     val_loss = model.evaluate(dataset.X_validation, dataset.y_validation, verbose=0)
@@ -248,6 +245,7 @@ for i in range(len(grid)):
         best_val_loss = val_loss
         best_node = node
         save_model(model, dataset_name, "model")
+        plot(model, to_file='model.png', show_layer_names=True, show_shapes=True)
 
     # Clear session to avoid OOM in very big grids
     kb.clear_session()
