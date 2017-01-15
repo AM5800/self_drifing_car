@@ -42,6 +42,8 @@ Validation set is made larger to be able to better control changes in validation
 ### Data augmentation
 I have used only one augmentation technique: converting image to HSV colorspace. Mostly because of V channel. Since it is more robust to changes in the lighting conditions.
 
+_Please note_: [drive.py](drive.py) was modified to automatically augment images.
+
 ## Training
 So far I have tried 2 network architectures. 
 First is AlexNet-like network and second is VGG-like. 
