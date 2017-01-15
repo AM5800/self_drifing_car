@@ -58,12 +58,12 @@ Dropout and BatchNormalization are used to reduce overfitting.
 BatchNormalization also helps to speed up covergence.
 
 ## Final network description
-AlexNet and VGG showed comparable results on validation dataset. But AlexNet runs up to 3 times faster. And model performance is very important in such real-time task as car driving. So I am using AlexNet further.
+AlexNet and VGG showed comparable results on validation dataset. But AlexNet runs up to 3 times faster. And model performance is very important in such real-time task as car driving. So my final net is AlexNet
 
 With grid I have found that best results are achieved when BatchNormalization os turned on and dropout is set to 0.7
 
-AlexNet consists of 4 Convolution layers, each followed by BN, relu and max pool layers.
-After that goes one hidden layer with batch normalization, relu and dropout.
+My AlexNet consists of 4 Convolution layers, each followed by relu, BN and max pool layers.
+After that go two hidden layers with relu, batch normalization and dropout.
 And final layer is a single value - predicted steering angle.
 
 I use Adam optimizer and **mean square error** as loss function
