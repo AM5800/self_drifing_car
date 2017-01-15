@@ -6,6 +6,7 @@
 * [model.json](model.json) - final model structure definition
 * [model.h5](model.h5) - final model's weights
 * [model.cfg](model.cfg) - stores dataset name which was used during training
+* [model.png](model.png) - final model structure graph
 
 ## Dataset preparation
 Dataset consists of training data and validation data. 
@@ -65,6 +66,8 @@ With grid I have found that best results are achieved when BatchNormalization os
 My AlexNet consists of 4 Convolution layers, each followed by relu, BN and max pool layers.
 After that go two hidden layers with relu, batch normalization and dropout.
 And final layer is a single value - predicted steering angle.
+
+See [model.png](model.png) for full network graph (it is too big to include in report)
 
 I use Adam optimizer and **mean square error** as loss function
 
