@@ -47,7 +47,7 @@ _Please note_: [drive.py](drive.py) was modified to automatically augment images
 ## Training
 So far I have tried 2 network architectures. 
 First is AlexNet-like network and second is VGG-like. 
-Both networks are not "100% as described in original papers". They are rather look like AlexNet and VGG. But for simplicity I will refer to them as AlexNet and VGG further.
+Both networks are not "100% as described in original papers". They rather look like AlexNet and VGG. But for simplicity I will refer to them as AlexNet and VGG further.
 
 To find best network architecture and hyperparameters I used grid search.
 With grid search I optimized:
