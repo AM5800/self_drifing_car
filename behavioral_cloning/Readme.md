@@ -39,6 +39,9 @@ Validation set is made larger to be able to better control changes in validation
 
 ![Validation data example](validation_example.jpg)
 
+### Data augmentation
+I have used only one augmentation technique: converting image to HSV colorspace. Mostly because of V channel. Since it is more robust to changes in the lighting conditions.
+
 ## Training
 So far I have tried 2 network architectures. 
 First is AlexNet-like network and second is VGG-like. 
@@ -72,4 +75,11 @@ See [model.png](model.png) for full network graph (it is too big to include in r
 I use Adam optimizer and **mean square error** as loss function
 
 ## Conclusion
+Final model is able to drive test track almost perfectly - it never hits yellow lines. However it fails to drive the second track at all.
+There are only two explanations for this: 
+1. model has "learned"(overfitted) first track and can't drive anywhere else.
+2. training only on the first track is just not enough to drive on the second.
 
+I have also noticed that model performance depends much more on what I show to the network, rather than which network architecture/hyperparameters I use. 
+
+I am going to address above issues in the next iteration of this project.
