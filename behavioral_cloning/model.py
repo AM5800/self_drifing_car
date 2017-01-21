@@ -9,6 +9,9 @@ from keras import backend as kb
 import time
 from dataset import dataset_provider, Dataset
 from keras.utils.visualize_util import plot
+import matplotlib.pyplot as plt
+import pickle
+import grid
 
 
 # Reads driving log and loads center image + steering angle
@@ -102,123 +105,38 @@ def alexnet(input_shape, dropout, use_bn):
     return model
 
 
-# Defines VGG-like network
-# With 9 Convolution layers (Conv2d -> relu -> BN -> MaxPool)
-# And 3 Fully-connected layers
-def vgg(input_shape, dropout, use_bn):
-    model = Sequential()
+models = {"alexnet": alexnet}
 
-    model.add(Conv2D(64, 3, 3, activation="relu", input_shape=input_shape))
-    if use_bn:
-        model.add(BatchNormalization())
+grid_manager = grid.GridManager("history.p")
+#grid_manager.add("lr", [0.0001, 0.01, 0.00001])
+#grid_manager.add("model", ["alexnet"])
+#grid_manager.add("dropout", [0.5, 0.3, 0.7, 0.65, 0.75, 0.0])
+#grid_manager.add("bn", [True, False])
+#grid_manager.add("dataset", ["original", "hsv"])
 
-    model.add(Conv2D(64, 3, 3, activation="relu"))
-    if use_bn:
-        model.add(BatchNormalization())
+grid_manager.add("lr", [0.0001])
+grid_manager.add("model", ["alexnet"])
+grid_manager.add("dropout", [0.5])
+grid_manager.add("bn", [True])
+grid_manager.add("dataset", ["original"])
 
-    model.add(MaxPooling2D())
+new_nodes = grid_manager.get_new_nodes()
+for i in range(len(new_nodes)):
+    node = new_nodes[i]
 
-    model.add(Conv2D(128, 3, 3, activation="relu"))
-    if use_bn:
-        model.add(BatchNormalization())
-
-    model.add(Conv2D(128, 3, 3, activation="relu"))
-    if use_bn:
-        model.add(BatchNormalization())
-
-    model.add(MaxPooling2D())
-
-    model.add(Conv2D(256, 3, 3, activation="relu"))
-    if use_bn:
-        model.add(BatchNormalization())
-
-    model.add(Conv2D(256, 3, 3, activation="relu"))
-    if use_bn:
-        model.add(BatchNormalization())
-
-    model.add(MaxPooling2D())
-
-    model.add(Conv2D(512, 3, 3, activation="relu"))
-    if use_bn:
-        model.add(BatchNormalization())
-
-    model.add(Conv2D(512, 3, 3, activation="relu"))
-    if use_bn:
-        model.add(BatchNormalization())
-
-    model.add(MaxPooling2D())
-
-    model.add(Conv2D(1024, 3, 3, activation="relu"))
-    if use_bn:
-        model.add(BatchNormalization())
-
-    model.add(Conv2D(1024, 3, 3, activation="relu"))
-    if use_bn:
-        model.add(BatchNormalization())
-
-    model.add(MaxPooling2D())
-
-    model.add(Flatten())
-
-    model.add(Dense(4096, activation="relu"))
-    if use_bn:
-        model.add(BatchNormalization())
-
-    model.add(Dense(1000, activation="relu"))
-    if use_bn:
-        model.add(BatchNormalization())
-
-    model.add(Dropout(dropout))
-
-    model.add(Dense(1))
-
-    return model
-
-
-grid = [{}]
-
-
-# Computes cartesian product of values and grid content
-def add_to_grid(name, values):
-    global grid
-
-    new_grid = []
-    for node in grid:
-        for value in values:
-            node_copy = copy.deepcopy(node)
-            node_copy[name] = value
-            new_grid.append(node_copy)
-
-    grid = new_grid
-
-
-add_to_grid("lr", [0.0001, 0.01, 0.00001])
-add_to_grid("dropout", [0.5, 0.3, 0.7, 0.65, 0.75, 0.0])
-add_to_grid("bn", [True])
-add_to_grid("dataset", ["original", "hsv"])
-add_to_grid("F", [alexnet])
-
-best_val_loss = 100
-# Grid node with the least validation loss will be saved in this variable
-best_node = None
-
-for i in range(len(grid)):
-    node = grid[i]
-    node["grid"] = "{0}/{1}".format(i + 1, len(grid))
-
+    print("{0}/{1}".format(i + 1, len(new_nodes)))
     print(node)
 
     lr = node["lr"]
     dropout = node["dropout"]
     bn = node["bn"]
     dataset_name = node["dataset"]
-    F = node["F"]
+    net = models[node["model"]]
 
     dataset = dataset_provider.get(dataset_name)
     dataset_shape = dataset_provider.get_shape(dataset_name)
 
-    model = F(dataset_shape, dropout, bn)
-    print(model.count_params())
+    model = net(dataset_shape, dropout, bn)
 
     model.compile(loss='mse',
                   optimizer='adam',
@@ -226,28 +144,30 @@ for i in range(len(grid)):
 
     t0 = time.time()
 
-    model.fit(dataset.X_train, dataset.y_train,
-              batch_size=10, nb_epoch=10,
-              verbose=0)
-
-    val_loss = model.evaluate(dataset.X_validation, dataset.y_validation, verbose=0)
+    history = model.fit(dataset.X_train, dataset.y_train,
+                        batch_size=10, nb_epoch=1,
+                        verbose=1, validation_data=(dataset.X_validation, dataset.y_validation))
 
     elapsed_time = time.time() - t0
 
-    node["val_loss"] = val_loss
-    node["elapsed_time"] = elapsed_time
+    result = {}
+
+    val_loss = history.history["val_loss"][-1]
+    result["elapsed_time"] = elapsed_time
+    result["val_loss_history"] = history.history["val_loss"]
+    result["loss_history"] = history.history["loss"]
+    result["val_loss"] = val_loss
 
     print("val_loss", val_loss)
     print("elapsed time:", elapsed_time)
     print()
 
-    if val_loss < best_val_loss:
+    if val_loss < grid_manager.get_best_result_value():
         best_val_loss = val_loss
-        best_node = node
         save_model(model, dataset_name, "model")
         plot(model, to_file='model.png', show_layer_names=True, show_shapes=True)
 
+    grid_manager.submit(val_loss, node, result)
+
     # Clear session to avoid OOM in very big grids
     kb.clear_session()
-
-print("Best node:", best_node)
