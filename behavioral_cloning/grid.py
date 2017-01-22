@@ -25,15 +25,20 @@ class GridManager:
 
         self.__grid = new_grid
 
-    def submit(self, result_value, node, result):
+    def save_node_result(self, node, result):
         self.__results[self.__node_to_hashable(node)] = (node, result)
-        self.__best_result_value = min(self.__best_result_value, result_value)
+        self.save()
 
+    def save(self):
         pickle.dump(
             {
                 "results": self.__results,
                 "best_result_value": self.__best_result_value
             }, open(self.__file_name, "wb"))
+
+    def submit_best_result_value(self, best_result):
+        self.__best_result_value = min(self.__best_result_value, best_result)
+        self.save()
 
     def get_best_result_value(self):
         return self.__best_result_value
