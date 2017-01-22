@@ -1,17 +1,18 @@
 import csv
-import numpy as np
-from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout, BatchNormalization, Activation
-from keras.models import Sequential
 import os
-import matplotlib.image as mpimg
-import copy
-from keras import backend as kb
 import time
-from dataset import dataset_provider, Dataset
-from keras.utils.visualize_util import plot
+
+import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
-import pickle
+import numpy as np
+from keras import backend as kb
+from keras.callbacks import EarlyStopping
+from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout, BatchNormalization
+from keras.models import Sequential
+from keras.utils.visualize_util import plot
+
 import grid
+from dataset import dataset_provider, Dataset
 
 
 # Reads driving log and loads center image + steering angle
@@ -29,7 +30,7 @@ def read_log_file(file_path):
             steering_angle = float(row[3])
 
             img = mpimg.imread(img_path)
-            xs.append(img)
+            xs.append(img_path)
             ys.append(steering_angle)
 
     xs = np.array(xs)
@@ -88,8 +89,6 @@ def alexnet(input_shape, dropout, use_bn):
 
     model.add(Flatten())
 
-    print(model.layers[-1].output_shape)
-
     model.add(Dense(1024, activation="relu"))
     if use_bn:
         model.add(BatchNormalization())
@@ -108,17 +107,19 @@ def alexnet(input_shape, dropout, use_bn):
 models = {"alexnet": alexnet}
 
 grid_manager = grid.GridManager("history.p")
-#grid_manager.add("lr", [0.0001, 0.01, 0.00001])
-#grid_manager.add("model", ["alexnet"])
-#grid_manager.add("dropout", [0.5, 0.3, 0.7, 0.65, 0.75, 0.0])
-#grid_manager.add("bn", [True, False])
-#grid_manager.add("dataset", ["original", "hsv"])
-
-grid_manager.add("lr", [0.0001])
+grid_manager.add("lr", [None, 0.0001, 0.01, 0.00001])
 grid_manager.add("model", ["alexnet"])
-grid_manager.add("dropout", [0.5])
-grid_manager.add("bn", [True])
-grid_manager.add("dataset", ["original"])
+grid_manager.add("dropout", [0.5, 0.3, 0.7, 0.65, 0.75, 0.0])
+grid_manager.add("bn", [True, False])
+grid_manager.add("dataset", ["norm_rgb", "original", "hsv", ])
+
+
+def image_loader(input):
+    img_path = input[0]
+    steering_angle = input[1]
+    img = mpimg.imread(img_path)
+    return img, steering_angle
+
 
 new_nodes = grid_manager.get_new_nodes()
 for i in range(len(new_nodes)):
@@ -133,7 +134,6 @@ for i in range(len(new_nodes)):
     dataset_name = node["dataset"]
     net = models[node["model"]]
 
-    dataset = dataset_provider.get(dataset_name)
     dataset_shape = dataset_provider.get_shape(dataset_name)
 
     model = net(dataset_shape, dropout, bn)
@@ -144,9 +144,18 @@ for i in range(len(new_nodes)):
 
     t0 = time.time()
 
-    history = model.fit(dataset.X_train, dataset.y_train,
-                        batch_size=10, nb_epoch=1,
-                        verbose=1, validation_data=(dataset.X_validation, dataset.y_validation))
+    train_size = dataset_provider.get_train_size()
+    val_size = dataset_provider.get_val_size()
+
+    es = EarlyStopping(patience=3, min_delta=30.0 / train_size)
+
+    batch_size = 10
+    train_generator = dataset_provider.get_train_generator(dataset_name, batch_size)
+    valid_generator = dataset_provider.get_valid_generator(dataset_name, batch_size)
+
+    history = model.fit_generator(train_generator, samples_per_epoch=train_size, callbacks=[es],
+                                  nb_epoch=30, validation_data=valid_generator, nb_val_samples=val_size,
+                                  verbose=0)
 
     elapsed_time = time.time() - t0
 
@@ -165,9 +174,27 @@ for i in range(len(new_nodes)):
     if val_loss < grid_manager.get_best_result_value():
         best_val_loss = val_loss
         save_model(model, dataset_name, "model")
-        plot(model, to_file='model.png', show_layer_names=True, show_shapes=True)
+        plot(model, to_file='model.png', show_layer_names=False, show_shapes=True)
 
     grid_manager.submit(val_loss, node, result)
 
     # Clear session to avoid OOM in very big grids
     kb.clear_session()
+
+top = sorted(grid_manager.get_results(), key=lambda r: r[1]["val_loss"])[:5]
+handles = []
+for i in range(len(top)):
+    node = top[i][0]
+    result = top[i][1]
+    label = "Model {0}".format(i)
+    h = plt.plot(result["val_loss_history"], label=label)
+    handles.append(h[0])
+    print("{0} = {1}".format(label, node))
+    print("val_loss: {0}, elapsed: {1}, epochs: {2}".format(result["val_loss"], result["elapsed_time"],
+                                                            len(result["val_loss_history"])))
+    print()
+
+plt.legend(handles=handles)
+plt.ylabel("val_loss")
+plt.ylabel("epoch")
+plt.show()

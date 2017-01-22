@@ -11,8 +11,9 @@ class GridManager:
         self.__best_result_value = 1000
 
         if os.path.isfile(file_name):
-            self.__results = pickle.load(open(file_name, "rb"))
-            self.__best_result_value = max(self.__results, key=lambda x: x[1][0])
+            data = pickle.load(open(file_name, "rb"))
+            self.__results = data["results"]
+            self.__best_result_value = data["best_result_value"]
 
     def add(self, name, values):
         new_grid = []
@@ -25,10 +26,14 @@ class GridManager:
         self.__grid = new_grid
 
     def submit(self, result_value, node, result):
-        self.__results[self.__node_to_hashable(node)] = (result_value, result)
+        self.__results[self.__node_to_hashable(node)] = (node, result)
         self.__best_result_value = min(self.__best_result_value, result_value)
 
-        pickle.dump(self.__results, open(self.__file_name, "wb"))
+        pickle.dump(
+            {
+                "results": self.__results,
+                "best_result_value": self.__best_result_value
+            }, open(self.__file_name, "wb"))
 
     def get_best_result_value(self):
         return self.__best_result_value
@@ -48,3 +53,6 @@ class GridManager:
                 result.append(node)
 
         return result
+
+    def get_results(self):
+        return list(self.__results.values())
