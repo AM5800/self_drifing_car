@@ -13,9 +13,17 @@ I use two separate datasets in this project. Fist, "training set" is used to tra
 
 ## Training set
 To create a training set one can simply drive both provided test tracks in the center. But this is not enough: if a model leaves perfect trajectory (and it will) - it won't know what to do. That's why I also add some recovery maneuvers:
-I move car to the edge of road and back. But then I delete frames where car is moving towards the edge. Since network sees our input and will eventually try to mimic our behaviour - it is a bad idea to show it how to get off the road. But if it happens - model will know what to do.
+I move car to the edge of road and back. But then I delete frames where car is moving towards the edge. Since network sees our input and will eventually try to mimic our behaviour - it is a bad idea to show it how to get off the road. But if it happens - model will know what to do. Total training set size is 4992 images.
 
 ## Validation set
+Early experiments showed that it is quite hard bo evaluate model based only on validation data. Two models with almost same validation score might behave totally different - one driving smoothly and ohter - driving in zigzags, loosing control and eventually leaving the test track. This makes automatic model selection very hard. 
+
+To address this issue I first tried to increase size of the validation set. But it didn't help. I think this is because model needs only 2-3 frames to loose control. And even though mean square error for such frames will be high - it will be unnoticable when there are 6000 other frames which model had driven perfectly.
+
+Solution that worked is to decrease validation set size. I was monitoring how models are driving on the test track and if I saw some place where it was frequently misbehaving - I made a few validation frames with expected steering angle. 
+I ended with only 21 total images in validation set. Despite such small size my confidence in validation score is very high now. I am now sure that almost any model with validation score less than 0.1 is capable to drive. Which made automatic model selection very simple and predictable.
+
+
 
 
 ## Project structure
