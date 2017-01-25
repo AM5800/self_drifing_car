@@ -23,6 +23,11 @@ To address this issue I first tried to increase size of the validation set. But 
 Solution that worked is to decrease validation set size. I was monitoring how models are driving on the test track and if I saw some place where it was frequently misbehaving - I made a few validation frames with expected steering angle. 
 I ended with only 21 total images in validation set. Despite such small size my confidence in validation score is very high now. I am now sure that almost any model with validation score less than 0.1 is capable to drive. Which made automatic model selection very simple and predictable.
 
+## Image preprocessing
+I have tried to convert images to HSV colorspace. Intuition behind this desicion is that change in the lighting conditions will mostly affect one channel - V. And all three channels are usually affected in RGB model making it harder for model to learn the dependency between channels. 
+
+Another technique is image normalization (R/255-0.5; G/255-0.5; B/255-0.5). In theory it should speed up model convergence because model has to spend less effort adapting for constantly changing distribution in the input data. In practice I haven't noticed any speed up in covergence.
+
 
 
 
