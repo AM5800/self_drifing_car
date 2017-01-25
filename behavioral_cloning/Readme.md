@@ -40,6 +40,10 @@ To minimize MSE I use Adam optimizer. And to find best network architecture and 
 - Use of Batch Normalization
 - Image preprocessing technique
 
+Next I will describe some notable networks
+
+## AlexNet
+First network is not actually AlexNet. But it is very similar.
 
 
 ## Project structure
