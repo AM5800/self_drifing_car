@@ -1,4 +1,11 @@
-# Project report: Behavioral cloning
+# Problem overview
+As part of the Udacity Self-driving car nanodegree program I was given a task to write an AI capable of driving car in a specially build simulator. Position and orientation of the car - those are parameters unknown to the model. It only allowed to see an image from the frontal camera mounted on the car. Given an image from a camera and constant throttle it should predict steering wheel angle. 
+
+Sample view from car camera
+
+Video link
+
+
 ## Project structure
 * [model.py](model.py) - contains NN definition and functions to train it
 * [drive.py](drive.py) - controls simulation
