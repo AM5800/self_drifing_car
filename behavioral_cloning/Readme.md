@@ -6,7 +6,7 @@ Sample view from car camera
 Video link
 
 # Solution approach
-This problem is solved in terms of supervised learning. I.e we build some model(models), feed it some sample images with marked steering angle and hope it will be able to drive. In this particular environment we have an ability to generate data by ourself - by driving a car in a simulator while recording required data. So the first step is to gather training data
+This problem is approached in terms of supervised learning. I.e we build some model(models), feed it some sample images with marked steering angle and hope it will be able to drive. In this particular environment we have an ability to generate data by ourselfs - by driving a car in a simulator while recording required data. So the first step is to gather training data
 
 ## Project structure
 * [model.py](model.py) - contains NN definition and functions to train it
