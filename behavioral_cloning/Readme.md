@@ -63,6 +63,10 @@ This network is used for image classification. So I have changed last layer to b
 Mindblowing scheme is here
 
 # Results
+Default model predicts steering angle and drives with constant throttle. But this constant throttle is just not enough for test track 2 because it has some uphill parts. I have changed throttle according to this formula:
+
+formula
+
 In the end all described networks can drive a car in a simulator. I haven't found any difference betwenn alexnet modifications except that simple alexnet was training slightly faster on average.
 
 Inception network showed good results on validation dataset. But very poor results in actual driving. It was always doing zig-zags which usually led it into the wall. One of the reasons for this might be the fact that it was taking 10 times more to process each frame. And because of this delay new steering angles come with too big delay. To proove that version I have added 0.09 second delay to a model that drives good. And it ended zigzaging too.
