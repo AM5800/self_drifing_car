@@ -54,8 +54,13 @@ Dropout also added to last hidden layer to even further prevent overfitting.
 scheme_link
 
 ## AlexNet modifications
+I also tried some modifications of alexnet. First, I have added dropout layers between convolutions. And second, I have removed max pooling layers. And increased convolution stride respectively.
 
 ## InceptionV3
+Another interesting architecture that I tried - is inception network from google. You can see it's amazing architecture here. Keras framework has built-in function for creating this network keras.applications.inceptionv3
+This network is used for image classification. So I have changed last layer to be regressor.
+
+Mindblowing scheme is here
 
 ## Project structure
 * [model.py](model.py) - contains NN definition and functions to train it
