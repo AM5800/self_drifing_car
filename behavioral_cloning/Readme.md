@@ -71,7 +71,13 @@ So final model uses alexnet architecture, batch normalization and dropout = 0.7
 
 validation graph link
 
-## Project structure
+# Conclusion
+Alexnet is able to drive both test tracks quite well. Inception network shows good "static" results but is unable to produce result fast enough to drive. 
+
+This project was super useful for me. I have tried different neural network architectures and developed a lot of knowledge and intuition on how to train them.
+
+
+# Appendix: project structure
 * [model.py](model.py) - contains NN definition and functions to train it
 * [drive.py](drive.py) - controls simulation
 * [dataset.py](dataset.py) - utiliy functions for dataset loading and transformation
@@ -80,9 +86,3 @@ validation graph link
 * [model.h5](model.h5) - final model's weights
 * [model.cfg](model.cfg) - stores dataset name which was used during training
 * [model.png](model.png) - final model structure graph
-
-
-## Conclusion
-Alexnet is able to drive both test tracks quite well. Inception network shows good "static" results but is unable to produce result fast enough to drive. 
-
-This project was super useful for me. I have tried different neural network architectures and developed a lot of knowledge and intuition on how to train them.
