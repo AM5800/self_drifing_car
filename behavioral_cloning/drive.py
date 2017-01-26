@@ -11,6 +11,7 @@ from flask import Flask
 from keras.models import model_from_json
 
 import dataset as ds
+import time
 
 tf.python.control_flow_ops = tf
 
@@ -35,11 +36,15 @@ def telemetry(sid, data):
     image_array = np.asarray(image)
     transformed_image_array = image_array[None, :, :, :]
     transformed_image_array = ds.dataset_provider.convert(dataset_name, transformed_image_array)
-    # This model currently assumes that the features of the model are just the images. Feel free to change this.
+
+    t0 = time.time()
     steering_angle = float(model.predict(transformed_image_array, batch_size=1))
-    # The driving model currently just outputs a constant throttle. Feel free to edit this.
-    throttle = 0.2
-    print(steering_angle, throttle)
+    elapsed = time.time() - t0
+
+    max_speed = 25
+    speed = float(speed)
+    throttle = max(0, -pow(speed/max_speed, 2) + 1)
+    print(steering_angle, throttle, elapsed)
     send_control(steering_angle, throttle)
 
 
