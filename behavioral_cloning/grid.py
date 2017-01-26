@@ -3,9 +3,13 @@ import os
 import pickle
 
 
+def flatten(list_of_lists):
+    return [item for sublist in list_of_lists for item in sublist]
+
+
 class GridManager:
     def __init__(self, file_name):
-        self.__grid = [{}]
+        self.__grids = {}
         self.__file_name = file_name
         self.__results = {}
         self.__best_result_value = 1000
@@ -15,15 +19,15 @@ class GridManager:
             self.__results = data["results"]
             self.__best_result_value = data["best_result_value"]
 
-    def add(self, name, values):
+    def add(self, grid_id, param_name, param_value):
         new_grid = []
-        for node in self.__grid:
-            for value in values:
+        for node in self.__grids.setdefault(grid_id, [{}]):
+            for value in param_value:
                 node_copy = copy.deepcopy(node)
-                node_copy[name] = value
+                node_copy[param_name] = value
                 new_grid.append(node_copy)
 
-        self.__grid = new_grid
+        self.__grids[grid_id] = new_grid
 
     def save_node_result(self, node, result):
         self.__results[self.__node_to_hashable(node)] = (node, result)
@@ -52,7 +56,7 @@ class GridManager:
 
         tested_nodes = set(self.__results.keys())
 
-        for node in self.__grid:
+        for node in flatten(self.__grids.values()):
             node_str = self.__node_to_hashable(node)
             if node_str not in tested_nodes:
                 result.append(node)
@@ -61,3 +65,6 @@ class GridManager:
 
     def get_results(self):
         return list(self.__results.values())
+
+    def new_grid(self):
+        return len(self.__grids)

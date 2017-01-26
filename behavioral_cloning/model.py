@@ -20,10 +20,16 @@ from dataset import dataset_provider, Dataset
 def read_log_file(file_path):
     xs = []
     ys = []
+
+    log_directory = os.path.abspath(os.path.dirname(file_path))
+
     with open(file_path) as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
             img_path = row[0]
+
+            img_name = os.path.basename(img_path)
+            img_path = os.path.join(log_directory, "IMG", img_name)
 
             if not os.path.isfile(img_path):
                 continue
@@ -36,19 +42,30 @@ def read_log_file(file_path):
     xs = np.array(xs)
     ys = np.array(ys)
 
+    if len(xs) == 0:
+        raise Exception("Driving log is empty: " + file_path)
+
     return xs, ys
 
 
 def load_dataset():
     # Train set and validation set both were created manually
     # and held separately
-    train_files = ["train/t1_center_2l/driving_log.csv",
-                   "train/t1_recovery/driving_log.csv",
-                   "train/t2_center_0l/driving_log.csv"]
+    train_files = [
+        # "train/t1_center_2l/driving_log.csv",
+        "train/iteration1/driving_log.csv",
+        # "train/t1_recovery/driving_log.csv",
+        "train/t2_center_0l/driving_log.csv",
+        "train/t2_recovery/driving_log.csv",
+        # "train/udacity/driving_log.csv"
+    ]
 
-    valid_files = ["validation/iteration1/driving_log.csv",
-                   "validation/t2_center_0l/driving_log.csv",
-                   "validation/t2_recovery/driving_log.csv"]
+    valid_files = [
+        # "validation/iteration1/driving_log.csv",
+        # "validation/t2_center_0l/driving_log.csv",
+        # "validation/t2_recovery/driving_log.csv",
+        "validation/manual/driving_log.csv"
+    ]
     X_train = []
     y_train = []
     X_valid = []
@@ -69,6 +86,9 @@ def load_dataset():
     X_valid = np.array(X_valid)
     y_valid = np.array(y_valid)
 
+    print("Train set size:", len(X_train))
+    print("Validation set size:", len(X_valid))
+
     return Dataset(X_train, y_train, X_valid, y_valid, [], [])
 
 
@@ -79,6 +99,9 @@ dataset_provider.initialize(load_dataset())
 # With 4 Convolution layers (Conv2d -> relu -> BN -> MaxPool)
 # And 3 Fully-connected layers
 def alexnet(input_shape, dropout, use_bn):
+    if dropout is None and use_bn == False:
+        return None
+
     model = Sequential()
 
     model.add(Conv2D(32, 3, 3, activation="relu", input_shape=input_shape))
@@ -119,13 +142,103 @@ def alexnet(input_shape, dropout, use_bn):
     return model
 
 
+def alexnet_dp(input_shape, dropout, use_bn):
+    if dropout is None:
+        return None
+
+    model = Sequential()
+
+    model.add(Conv2D(32, 3, 3, activation="relu", border_mode="same", input_shape=input_shape))
+    if use_bn:
+        model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(3, 3)))
+    model.add(Dropout(dropout))
+
+    model.add(Conv2D(64, 3, 3, border_mode="same", activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(3, 3)))
+    model.add(Dropout(dropout))
+
+    model.add(Conv2D(128, 3, 3, border_mode="same", activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
+    model.add(MaxPooling2D())
+    model.add(Dropout(dropout))
+
+    model.add(Conv2D(256, 3, 3, border_mode="same", activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
+    model.add(MaxPooling2D())
+    model.add(Dropout(dropout))
+
+    model.add(Flatten())
+
+    model.add(Dense(1024, activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
+
+    model.add(Dense(256, activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
+
+    model.add(Dropout(dropout))
+
+    model.add(Dense(1))
+
+    return model
+
+
+def alexnet_no_mp(input_shape, dropout, use_bn):
+    if dropout is None:
+        return None
+
+    model = Sequential()
+
+    model.add(Conv2D(32, 3, 3, subsample=(3, 3), border_mode="same", activation="relu", input_shape=input_shape))
+    if use_bn:
+        model.add(BatchNormalization())
+    model.add(Dropout(dropout))
+
+    model.add(Conv2D(64, 3, 3, subsample=(3, 3), border_mode="same", activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
+    model.add(Dropout(dropout))
+
+    model.add(Conv2D(128, 3, 3, subsample=(3, 3), border_mode="same", activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
+    model.add(Dropout(dropout))
+
+    model.add(Conv2D(256, 3, 3, subsample=(3, 3), border_mode="same", activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
+    model.add(Dropout(dropout))
+
+    model.add(Flatten())
+
+    model.add(Dense(1024, activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
+
+    model.add(Dense(256, activation="relu"))
+    if use_bn:
+        model.add(BatchNormalization())
+
+    model.add(Dropout(dropout))
+
+    model.add(Dense(1))
+
+    return model
+
+
 def inceptionv3(input_shape, dropout, use_bn):
     if not use_bn:
         return None
     if dropout is not None:
         return None
 
-    base_model = keras.applications.inception_v3.InceptionV3(include_top=False, weights='imagenet',
+    base_model = keras.applications.inception_v3.InceptionV3(include_top=False,
                                                              input_shape=input_shape)
 
     output = base_model.output
@@ -139,14 +252,22 @@ def inceptionv3(input_shape, dropout, use_bn):
     return model
 
 
-models = {"alexnet": alexnet, "inceptionv3": inceptionv3}
+models = {"alexnet": alexnet, "inceptionv3": inceptionv3, "alexnet_dp": alexnet_dp, "alexnet_no_mp": alexnet_no_mp}
 
 grid_manager = grid.GridManager("history.p")
-grid_manager.add("lr", [None])
-grid_manager.add("model", ["alexnet", "inceptionv3"])
-grid_manager.add("dropout", [None, 0.5, 0.3, 0.7, 0.65, 0.75, 0.0])
-grid_manager.add("bn", [True, False])
-grid_manager.add("dataset", ["norm_rgb", "original", "hsv", ])
+grid1 = grid_manager.new_grid()
+grid_manager.add(grid1, "model", ["alexnet", "alexnet_dp", "alexnet_no_mp"])
+grid_manager.add(grid1, "dropout", [None, 0.5, 0.7])
+grid_manager.add(grid1, "bn", [True, False])
+grid_manager.add(grid1, "dataset", ["hsv", "original"])
+grid_manager.add(grid1, "epochs", [20])
+
+grid2 = grid_manager.new_grid()
+grid_manager.add(grid2, "model", ["inceptionv3"])
+grid_manager.add(grid2, "dropout", [None])
+grid_manager.add(grid2, "bn", [True])
+grid_manager.add(grid2, "dataset", ["original"])
+grid_manager.add(grid2, "epochs", [100])
 
 
 class GlobalModelCheckpoint(Callback):
@@ -163,6 +284,7 @@ class GlobalModelCheckpoint(Callback):
             self.save_model(self.model, self.__node["dataset"], "model")
             plot(model, to_file='model.png', show_layer_names=False, show_shapes=True)
             grid_manager.submit_best_result_value(val_loss)
+            print()
 
     @staticmethod
     def save_model(model, dataset_name, name):
@@ -189,11 +311,11 @@ for i in range(len(new_nodes)):
     print("{0}/{1}".format(i + 1, len(new_nodes)))
     print(node)
 
-    lr = node["lr"]
     dropout = node["dropout"]
     bn = node["bn"]
     dataset_name = node["dataset"]
     net = models[node["model"]]
+    epochs = node["epochs"]
 
     dataset_shape = dataset_provider.get_shape(dataset_name)
 
@@ -202,16 +324,14 @@ for i in range(len(new_nodes)):
     if model is None:
         continue
 
-    model.compile(loss='mse',
-                  optimizer='adam',
-                  lr=lr)
+    model.compile(loss='mse', optimizer='adam')
 
     t0 = time.time()
 
     train_size = dataset_provider.get_train_size()
     val_size = dataset_provider.get_val_size()
 
-    es = EarlyStopping(patience=5, min_delta=0.01)
+    es = EarlyStopping(patience=epochs / 3, min_delta=0.01)
     saver = GlobalModelCheckpoint(node)
 
     batch_size = 10
@@ -219,7 +339,7 @@ for i in range(len(new_nodes)):
     valid_generator = dataset_provider.get_valid_generator(dataset_name, batch_size)
 
     history = model.fit_generator(train_generator, samples_per_epoch=train_size, callbacks=[es, saver],
-                                  nb_epoch=50, validation_data=valid_generator, nb_val_samples=val_size,
+                                  nb_epoch=epochs, validation_data=valid_generator, nb_val_samples=val_size,
                                   verbose=0)
 
     elapsed_time = time.time() - t0
@@ -249,10 +369,12 @@ def topN(filter_name, n):
     return list(sorted(filtered, key=lambda r: r[1]["val_loss"])[:n])
 
 
-top_alexnet = topN("alexnet", 3)
-top_inception = topN("inceptionv3", 3)
+top_alexnet = topN("alexnet", 2)
+top_inception = topN("inceptionv3", 2)
+top_alexnet_dp = topN("alexnet_dp", 2)
+top_alexnet_no_mp = topN("alexnet_no_mp", 2)
 handles = []
-top = top_alexnet + top_inception
+top = top_alexnet + top_inception + top_alexnet_dp + top_alexnet_no_mp
 for i in range(len(top)):
     node = top[i][0]
     result = top[i][1]
@@ -268,4 +390,5 @@ for i in range(len(top)):
 plt.legend(handles=handles)
 plt.ylabel("val_loss")
 plt.ylabel("epoch")
+plt.ylim(ymax=1)
 plt.show()
