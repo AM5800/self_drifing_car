@@ -47,8 +47,15 @@ Grid usually contains a lof of nodes. To speedup grid search even further I used
 Next I will describe some notable networks
 
 ## AlexNet
-First network is not actually AlexNet. But it is very similar.
+I always start vision problems with a simple AlexNet-like network. In this case it starts with 4 convolution layers and ends with 2 hidden layers connected to regressor. Each convolution layer uses 'relu' activation and followed by max_pooling layer. There is also batch normalization layer between all layers. BN layer serves two purposes: first, it makes models to converge faster (and for really deep models like inceptionV3 it is super important). Second, it works as a regularizer. Since the mean and bias are learned from batches - net never sees the same input twice. Actual placement of BN layer is arguable, but I met recommendations to place them after each convolution layer.
 
+Dropout also added to last hidden layer to even further prevent overfitting.
+
+scheme_link
+
+## AlexNet modifications
+
+## InceptionV3
 
 ## Project structure
 * [model.py](model.py) - contains NN definition and functions to train it
