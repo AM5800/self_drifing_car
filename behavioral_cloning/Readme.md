@@ -40,6 +40,10 @@ To minimize MSE I use Adam optimizer. And to find best network architecture and 
 - Use of Batch Normalization
 - Image preprocessing technique
 
+To reduce amount of RAM required to store the whole dataset, I store it as a list of paths to images. And when it comes to training I load only one batch of images with keras fit_generator.
+
+Grid usually contains a lof of nodes. To speedup grid search even further I used early stopping. Also I am checking model after each epoch and if it has best global validation performance - I save it.
+
 Next I will describe some notable networks
 
 ## AlexNet
