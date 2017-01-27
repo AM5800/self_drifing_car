@@ -65,9 +65,9 @@ This network is used for image classification. So I have changed last layer to b
 Mindblowing scheme is here
 
 ## Throttle
-First I used default throttle value. But soon I realized that it is too small for second track with it's steep uphill climb. So I came with this formula:
+First I used default throttle value. But soon I realized that it is too small for second track with it's steep uphill climb. So I came with this empirical formula:
 
-[formula]
+![](img/throttle.gif)
 
 Important thing about this formula is that it has value 1.0 when current vehicle speed is zero. And then throttle gently decrases as car reaches maximum speed of 25 miles per hour. 
 
@@ -76,7 +76,7 @@ Why not just set throttle to maximum? Well, this will lead to increased vehicle 
 # Results
 Default model predicts steering angle and drives with constant throttle. But this constant throttle is just not enough for test track 2 because it has some uphill parts. I have changed throttle according to this formula:
 
-![](img/throttle.gif)
+
 
 In the end all described networks can drive a car in a simulator. I haven't found any difference betwenn alexnet modifications except that simple alexnet was training slightly faster on average.
 
