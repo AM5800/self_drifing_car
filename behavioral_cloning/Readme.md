@@ -18,17 +18,17 @@ Typical recovery maneuver:
 ![](img/Recovery.png)
 
 ## Validation set
-Early experiments showed that it is quite hard bo evaluate model based only on validation data. Two models with almost same validation score might behave totally different - one driving smoothly and ohter - driving in zigzags, loosing control and eventually leaving the test track. This makes automatic model selection very hard. 
+Early experiments showed that it is quite hard to evaluate model based only on validation data. Two models with almost same validation score might behave totally different - one driving smoothly and ohter - driving in zigzags, loosing control and eventually leaving the test track. This makes automatic model selection very hard. 
 
-To address this issue I first tried to increase size of the validation set. But it didn't help. I think this is because model needs only 2-3 frames to loose control. And even though mean square error for such frames will be high - it will be unnoticable when there are 6000 other frames which model had driven perfectly.
+To address this issue I first tried to increase size of the validation set. But it didn't help. I think this is because model needs only few frames to loose control. And even though mean square error for such frames will be high - it will be unnoticable when there are 6000 other frames which model had driven perfectly.
 
 Solution that worked is to decrease validation set size. I was monitoring how models are driving on the test track and if I saw some place where it was frequently misbehaving - I made a few validation frames with expected steering angle. 
-I ended with only 21 total images in validation set. Despite such small size my confidence in validation score is very high now. I am now sure that almost any model with validation score less than 0.1 is capable to drive. Which made automatic model selection very simple and predictable.
+I ended up with only 21 total images in validation set. Despite such small size my confidence in validation score is very high now. I am now sure that almost any model with validation score less than 0.1 is able to drive. This made automatic model selection very simple and reproducible.
 
 ## Image preprocessing
-I have tried to convert images to HSV colorspace. Intuition behind this desicion is that change in the lighting conditions will mostly affect one channel - V. And all three channels are usually affected in RGB model making it harder for model to learn the dependency between channels. 
+I have tried to convert images to HSV colorspace. Intuition behind this decision is that change in the lighting conditions will mostly affect one channel - V. And all three channels are usually affected in RGB model making it harder for model to learn the dependency between channels. 
 
-Another technique is image normalization (R/255-0.5; G/255-0.5; B/255-0.5). In theory it should speed up model convergence because model has to spend less effort adapting for constantly changing distribution in the input data. In practice I haven't noticed any speed up in covergence.
+Another technique is image normalization (R/255-0.5; G/255-0.5; B/255-0.5). In theory it should speed up model convergence because model has to spend less effort adapting for constantly changing distribution in the input data. In practice I haven't noticed any speed up in covergence. Perharps Batch Normalization (discussed later) is just more beneficial.
 
 # Training
 I have tried lots of models with different parameters. But they have a lot in common:
@@ -49,11 +49,11 @@ Grid usually contains a lof of nodes. To speedup grid search even further I used
 Next I will describe some notable networks
 
 ## AlexNet
-I always start vision problems with a simple AlexNet-like network. In this case it starts with 4 convolution layers and ends with 2 hidden layers connected to regressor. Each convolution layer uses 'relu' activation and followed by max_pooling layer. There is also batch normalization layer between all layers. BN layer serves two purposes: first, it makes models to converge faster (and for really deep models like inceptionV3 it is super important). Second, it works as a regularizer. Since the mean and bias are learned from batches - net never sees the same input twice. Actual placement of BN layer is arguable, but I met recommendations to place them after each convolution layer.
+AlexNet is very simple yet effective and proven architecture, so I always start vision problems with a it. In this case it starts with 4 convolution layers and ends with 2 hidden layers connected to a regressor. Each convolution layer uses 'relu' activation and is followed by max pooling layer. There is also batch normalization layer between each layer. BN layer serves two purposes: first, it makes models to converge faster (and for really deep models like inceptionV3 it is super important). Second, it works as a regularizer. Since the mean and bias are learned from batches statistics - net never sees the same input twice. Actual placement of BN layer is arguable, but I met recommendations to place them after each convolution layer.
 
 Dropout also added to last hidden layer to even further prevent overfitting.
 
-scheme_link
+![AlexNet scheme](img/alexnet.png)
 
 ## AlexNet modifications
 I also tried some modifications of alexnet. First, I have added dropout layers between convolutions. And second, I have removed max pooling layers. And increased convolution stride respectively.
