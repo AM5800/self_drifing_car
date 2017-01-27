@@ -76,7 +76,7 @@ Why not just set throttle to maximum? Well, this will lead to increased vehicle 
 # Results
 Default model predicts steering angle and drives with constant throttle. But this constant throttle is just not enough for test track 2 because it has some uphill parts. I have changed throttle according to this formula:
 
-formula
+![](img/throttle.gif)
 
 In the end all described networks can drive a car in a simulator. I haven't found any difference betwenn alexnet modifications except that simple alexnet was training slightly faster on average.
 
