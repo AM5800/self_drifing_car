@@ -67,7 +67,8 @@ Mindblowing scheme is here
 ## Throttle
 First I used default throttle value. But soon I realized that it is too small for second track with it's steep uphill climb. So I came with this empirical formula:
 
-![](img/throttle.gif)
+![](img/throttle.gif),
+where x is current speed of vehicle
 
 Important thing about this formula is that it has value 1.0 when current vehicle speed is zero. And then throttle gently decrases as car reaches maximum speed of 25 miles per hour. 
 
