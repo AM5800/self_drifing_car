@@ -56,7 +56,7 @@ Dropout also added to last hidden layer to even further prevent overfitting.
 ![AlexNet scheme](img/alexnet.png)
 
 ## AlexNet modifications
-I also tried some modifications of alexnet. First, I have added dropout layers between convolutions. And second, I have removed max pooling layers. And increased convolution stride respectively.
+I also tried some modifications of alexnet. First, I have added dropout layers between convolutions. This should prevent coadaptations between those layers. And second, I have removed max pooling layers. And increased convolution stride respectively. This allows to reduce input dimensionality(as max pooling does) but in a more accurate and efficient way than just dropping 8/9 pixels.
 
 ## InceptionV3
 Another interesting architecture that I tried - is inception network from google. You can see it's amazing architecture here. Keras framework has built-in function for creating this network keras.applications.inceptionv3
