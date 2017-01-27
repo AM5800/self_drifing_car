@@ -65,7 +65,7 @@ This network is used for image classification. So I have changed last layer to b
 Mindblowing scheme is here
 
 ## Throttle
-First I used default throttle value. But soon I realized that it is too small for second track with it's steep uphill climb. So I came with this empirical formula:
+First I used default throttle value. But soon I realized that it is too small for second track with it's steep uphill climbs. So I came with this empirical formula:
 
 ![](img/throttle.gif)
 
@@ -75,24 +75,12 @@ Important thing about this formula is that it has value 1.0 when current vehicle
 
 Why not just set throttle to maximum? Well, this will lead to increased vehicle speed. And I didn't train my models for that.
 
-# Results
-Default model predicts steering angle and drives with constant throttle. But this constant throttle is just not enough for test track 2 because it has some uphill parts. I have changed throttle according to this formula:
-
-
-
+# Results and conclusion
 In the end all described networks can drive a car in a simulator. I haven't found any difference betwenn alexnet modifications except that simple alexnet was training slightly faster on average.
 
-Inception network showed good results on validation dataset. But very poor results in actual driving. It was always doing zig-zags which usually led it into the wall. One of the reasons for this might be the fact that it was taking 10 times more to process each frame. And because of this delay new steering angles come with too big delay. To proove that version I have added 0.09 second delay to a model that drives good. And it ended zigzaging too.
+Inception network showed good results on validation dataset. But very poor results in actual driving. It was always doing zig-zags which usually led it into the wall. One of the reasons for this might be the fact that it was taking 10 times more to process each frame. And because of this delay new steering angles come with too big delay. To proove that version I have added 0.09 second delay to a model that drives good. And it ended zigzaging too. This is very unfortunate, since I was planning to do much more with this network. Transfer learning for example.
 
 So final model uses alexnet architecture, batch normalization and dropout = 0.7
-
-validation graph link
-
-# Conclusion
-Alexnet is able to drive both test tracks quite well. Inception network shows good "static" results but is unable to produce result fast enough to drive. 
-
-This project was super useful for me. I have tried different neural network architectures and developed a lot of knowledge and intuition on how to train them.
-
 
 # Appendix: project structure
 * [model.py](model.py) - contains NN definition and functions to train it
@@ -102,4 +90,3 @@ This project was super useful for me. I have tried different neural network arch
 * [model.json](model.json) - final model structure definition
 * [model.h5](model.h5) - final model's weights
 * [model.cfg](model.cfg) - stores dataset name which was used during training
-* [model.png](model.png) - final model structure graph
