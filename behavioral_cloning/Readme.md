@@ -1,7 +1,7 @@
 # Problem overview
-As part of the Udacity Self-driving car nanodegree program I was given a task to write an AI capable of driving car in a specially build simulator. Position and orientation of the car - those are parameters unknown to the model. It only allowed to see an image from the frontal camera mounted on the car. Given an image from a camera and constant throttle it should predict steering wheel angle. 
+As part of the [Udacity self-driving car nanodegree program](http://udacity.com/drive) I was given a task to write an AI capable of driving car in a specially built simulator. Position and orientation of the car - those are parameters unknown to the model. It only allowed to see an image from the frontal camera mounted on the car. Given an image from a camera and constant throttle it should predict steering wheel angle. 
 
-Here is what result looks like
+Here is what my result looks like
 https://www.youtube.com/watch?v=eJDFs58AD04
 
 # Solution approach
