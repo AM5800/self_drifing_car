@@ -12,15 +12,15 @@ I use two separate datasets in this project. Fist, "training set" is used to tra
 
 ## Training set
 To create a training set one can simply drive both provided test tracks in the center. But this is not enough: if a model leaves perfect trajectory (and it will) - it won't know what to do. That's why I also add some recovery maneuvers:
-I move car to the edge of road and back. But then I delete frames where car is moving towards the edge. Since network sees our input and will eventually try to mimic our behaviour - it is a bad idea to show it how to get off the road. But if it happens - model will know what to do. Total training set size is 4992 images.
+I move car to the edge of road and back. But then I delete frames where car is moving towards the edge. Since network sees our input and will eventually try to mimic our behavior - it is a bad idea to show it how to get off the road. But if it happens - model will know what to do. Total training set size is 4992 images.
 
 Typical recovery maneuver:
 ![](img/Recovery.png)
 
 ## Validation set
-Early experiments showed that it is quite hard to evaluate model based only on validation data. Two models with almost same validation score might behave totally different - one driving smoothly and ohter - driving in zigzags, loosing control and eventually leaving the test track. This makes automatic model selection very hard. 
+Early experiments showed that it is quite hard to evaluate model based only on validation data. Two models with almost same validation score might behave totally different - one driving smoothly and other - driving in zigzags, loosing control and eventually leaving the test track. This makes automatic model selection very hard. 
 
-To address this issue I first tried to increase size of the validation set. But it didn't help. I think this is because model needs only few frames to loose control. And even though mean square error for such frames will be high - it will be unnoticable when there are 6000 other frames which model had driven perfectly.
+To address this issue I first tried to increase size of the validation set. But it didn't help. I think this is because model needs only few frames to lose control. And even though mean square error for such frames will be high - it will be unnoticeable when there are 6000 other frames which model had driven perfectly.
 
 Solution that worked is to decrease validation set size. I was monitoring how models are driving on the test track and if I saw some place where it was frequently misbehaving - I made a few validation frames with expected steering angle. 
 I ended up with only 21 total images in validation set. Despite such small size my confidence in validation score is very high now. I am now sure that almost any model with validation score less than 0.1 is able to drive. This made automatic model selection very simple and reproducible.
@@ -28,13 +28,13 @@ I ended up with only 21 total images in validation set. Despite such small size 
 ## Image preprocessing
 I have tried to convert images to HSV colorspace. Intuition behind this decision is that change in the lighting conditions will mostly affect one channel - V. And all three channels are usually affected in RGB model making it harder for model to learn the dependency between channels. 
 
-Another technique is image normalization (R/255-0.5; G/255-0.5; B/255-0.5). In theory it should speed up model convergence because model has to spend less effort adapting for constantly changing distribution in the input data. In practice I haven't noticed any speed up in covergence. Perharps Batch Normalization (discussed later) is just more beneficial.
+Another technique is image normalization (R/255-0.5; G/255-0.5; B/255-0.5). In theory it should speed up model convergence because model has to spend less effort adapting for constantly changing distribution in the input data. In practice I haven't noticed any speed up in covergence. Perhaps Batch Normalization (discussed later) is just more beneficial.
 
 # Training
 I have tried lots of models with different parameters. But they have a lot in common:
 - Models use Convolutional layers with relu activation
 - Last layer contains single "node" - steering angle
-- Mean square error is used as validation loss funciton
+- Mean square error is used as validation loss function
 
 To minimize MSE I use Adam optimizer. And to find best network architecture and parameters I use grid search. In particular, with grid search I am optimizing:
 - Network architecture
@@ -44,7 +44,7 @@ To minimize MSE I use Adam optimizer. And to find best network architecture and 
 
 To reduce amount of RAM required to store the whole dataset, I store it as a list of paths to images. And when it comes to training I load only one batch of images with keras fit_generator.
 
-Grid usually contains a lof of nodes. To speedup grid search even further I used early stopping. Also I am checking model after each epoch and if it has best global validation performance - I save it.
+Grid usually contains a lof of nodes. To speedup grid search even further I used early stopping. Also, I am checking model after each epoch and if it has the best global validation performance - I save it.
 
 Next I will describe some notable networks
 
@@ -56,7 +56,7 @@ Dropout also added to last hidden layer to even further prevent overfitting.
 [AlexNet scheme](img/alexnet.png)
 
 ## AlexNet modifications
-I also tried some modifications of alexnet. First, I have added dropout layers between convolutions. This should prevent coadaptations between those layers. And second, I have removed max pooling layers. And increased convolution stride respectively. This allows to reduce input dimensionality(as max pooling does) but in a more accurate and efficient way than just dropping 8/9 pixels.
+I also tried some modifications of alexnet. First, I have added dropout layers between convolutions. This should prevent coadaptations between those layers. And second, I have removed max pooling layers. And increased convolution stride respectively. This reduces input dimensionality(as max pooling does) but in a more accurate and efficient way than just dropping 8/9 pixels.
 
 ## InceptionV3
 Another interesting architecture that I tried - is inception network from google. You can see it's amazing architecture here. Keras framework has built-in function for creating this network keras.applications.inceptionv3
@@ -76,9 +76,9 @@ Important thing about this formula is that it has value 1.0 when current vehicle
 Why not just set throttle to maximum? Well, this will lead to increased vehicle speed. And I didn't train my models for that.
 
 # Results and conclusion
-In the end all described networks can drive a car in a simulator. I haven't found any difference betwenn alexnet modifications except that simple alexnet was training slightly faster on average.
+In the end all described networks can drive a car in a simulator. I haven't found any difference between alexnet modifications except that simple alexnet was training slightly faster on average.
 
-Inception network showed good results on validation dataset. But very poor results in actual driving. It was always doing zig-zags which usually led it into the wall. One of the reasons for this might be the fact that it was taking 10 times more to process each frame. And because of this delay new steering angles come with too big delay. To proove that version I have added 0.09 second delay to a model that drives good. And it ended zigzaging too. This is very unfortunate, since I was planning to do much more with this network. Transfer learning for example.
+Inception network showed good results on validation dataset. But very poor results in actual driving. It was always doing zigzags which usually led it into the wall. One of the reasons for this might be the fact that it was taking 10 times more to process each frame. And because of this delay new steering angles come with too big delay. To proove that version I have added 0.09 second delay to a model that drives good. And it ended zigzagging too. This is very unfortunate, since I was planning to do much more with this network. Transfer learning for example.
 
 So final model uses alexnet architecture, batch normalization and dropout = 0.7
 
