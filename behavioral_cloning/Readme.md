@@ -34,7 +34,7 @@ Another technique is image normalization (R/255-0.5; G/255-0.5; B/255-0.5). In t
 I have tried lots of models with different parameters. But they have a lot in common:
 - Models use Convolutional layers with relu activation
 - Last layer contains single "node" - steering angle
-- Mean square error is used as validation loss function
+- Mean square error is used as loss function
 
 To minimize MSE I use Adam optimizer. And to find best network architecture and parameters I use grid search. In particular, with grid search I am optimizing:
 - Network architecture
