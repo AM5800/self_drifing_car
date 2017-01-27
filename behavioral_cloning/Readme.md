@@ -5,10 +5,10 @@ Here is what my result looks like
 https://www.youtube.com/watch?v=eJDFs58AD04
 
 # Solution approach
-This problem is approached in terms of supervised learning. I.e we build some model(models), feed it sample images with marked steering angle and hope it will be able to drive. In this particular environment we have an ability to generate data by ourselfs - by driving a car in a simulator while recording required data. So the first step is to gather training data
+This problem is approached in terms of supervised learning. I.e we build some model(models), feed it sample images with marked steering angle and hope it will be able to drive. In this particular environment we have an ability to generate data by ourselves - by driving a car in a simulator while recording required data. So the first step is to gather that data
 
 # Dataset creation
-I use two separate datasets in this project. Fist, "training set" is used to train several models. Second, "validation set" is used to evaluate model's performance and choose best model. And finally I can always launch simulator and let my model drive.
+I use two separate datasets in this project. Fist, "training set" is used to train several models. Second, "validation set" is used to evaluate each model's performance and choose the best model. And finally I can always launch simulator and let my model drive.
 
 ## Training set
 To create a training set one can simply drive both provided test tracks in the center. But this is not enough: if a model leaves perfect trajectory (and it will) - it won't know what to do. That's why I also add some recovery maneuvers:
