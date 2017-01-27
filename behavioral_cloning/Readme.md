@@ -14,6 +14,9 @@ I use two separate datasets in this project. Fist, "training set" is used to tra
 To create a training set one can simply drive both provided test tracks in the center. But this is not enough: if a model leaves perfect trajectory (and it will) - it won't know what to do. That's why I also add some recovery maneuvers:
 I move car to the edge of road and back. But then I delete frames where car is moving towards the edge. Since network sees our input and will eventually try to mimic our behaviour - it is a bad idea to show it how to get off the road. But if it happens - model will know what to do. Total training set size is 4992 images.
 
+Typical recovery maneuver:
+![](img/Recovery.png)
+
 ## Validation set
 Early experiments showed that it is quite hard bo evaluate model based only on validation data. Two models with almost same validation score might behave totally different - one driving smoothly and ohter - driving in zigzags, loosing control and eventually leaving the test track. This makes automatic model selection very hard. 
 
