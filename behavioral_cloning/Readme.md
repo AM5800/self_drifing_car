@@ -46,21 +46,24 @@ To reduce amount of RAM required to store the whole dataset, I store it as a lis
 
 Grid usually contains a lof of nodes. To speedup grid search even further I used early stopping. Also, I am checking model after each epoch and if it has the best global validation performance - I save it.
 
-Next I will describe some notable networks
+Next I will describe some notable networks.
 
 ## AlexNet
-AlexNet is very simple yet effective and proven architecture, so I always start vision problems with a it. In this case it starts with 4 convolution layers and ends with 2 hidden layers connected to a regressor. Each convolution layer uses 'relu' activation and is followed by max pooling layer. There is also batch normalization layer between each layer. BN layer serves two purposes: first, it makes models to converge faster (and for really deep models like inceptionV3 it is super important). Second, it works as a regularizer. Since the mean and bias are learned from batches statistics - net never sees the same input twice. Actual placement of BN layer is arguable, but I met recommendations to place them after each convolution layer.
+AlexNet is very simple yet effective and proven architecture for image recognition. And our problem is just about that - we receive an image from the camera and we should find high-level features that correspond to, for example, road boundaries. And then we will feed those high level features to fully connected layers that will predict steering angle.
+
+In this case the network starts with 4 convolution layers and ends with 2 hidden layers connected to a regressor. Each convolution layer uses 'relu' activation and is followed by max pooling layer. There is also batch normalization layer between each layer. BN layer serves two purposes: first, it makes models to converge faster (and for really deep models like inceptionV3 it is super important). Second, it works as a regularizer. Since the mean and bias are learned from batches statistics - net never sees the same input twice. Actual placement of BN layer is arguable, but I met recommendations to place them after each convolution layer.
 
 Dropout also added to last hidden layer to even further prevent overfitting.
 
 [AlexNet scheme](img/alexnet.png)
 
 ## AlexNet modifications
-I also tried some modifications of alexnet. First, I have added dropout layers between convolutions. This should prevent coadaptations between those layers. And second, I have removed max pooling layers. And increased convolution stride respectively. This reduces input dimensionality(as max pooling does) but in a more accurate and efficient way than just dropping 8/9 pixels.
+I also tried some modifications of alexnet. First, I have added dropout layers between convolutions. This should prevent co-adaptations between those layers. And second, I have removed max pooling layers. And increased convolution stride respectively. This reduces input dimensionality(as max pooling does) but in a more accurate and efficient way compared to just dropping 8 out of 9 pixels.
 
 ## InceptionV3
-Another interesting architecture that I tried - is inception network from google. You can see it's amazing architecture here. Keras framework has built-in function for creating this network keras.applications.inceptionv3
-This network is used for image classification. So I have changed last layer to be regressor.
+Another interesting architecture that I tried - is inception network from google. This network is also used in image processing and it showed very high score in ImageNet competition. There are  also other ImageNet winning networks such as VGG or ResNet. But they have much more parameters. Which is undesirable in a real time application.
+Keras framework has built-in function for creating this network: keras.applications.inceptionv3
+This network is designed for image classification. So I have changed last layer to be regressor.
 
 [Mindblowing scheme](img/inception.png)
 
