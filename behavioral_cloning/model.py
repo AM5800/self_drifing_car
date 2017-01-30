@@ -49,8 +49,8 @@ def read_log_file(file_path):
 
 
 def load_dataset():
-    # Train set and validation set both were created manually
-    # and held separately
+    # I have prepared different set of training/validation data.
+    # I can enable/disable it with comments
     train_files = [
         # "train/t1_center_2l/driving_log.csv",
         "train/iteration1/driving_log.csv",
@@ -97,7 +97,7 @@ dataset_provider.initialize(load_dataset())
 
 # Defines AlexNet-like network
 # With 4 Convolution layers (Conv2d -> relu -> BN -> MaxPool)
-# And 3 Fully-connected layers
+# And 2 hidden layers
 def alexnet(input_shape, dropout, use_bn):
     if dropout is None and use_bn == False:
         return None
@@ -142,6 +142,7 @@ def alexnet(input_shape, dropout, use_bn):
     return model
 
 
+# Same as alexnet, but dropout layers are added between convolutions
 def alexnet_dp(input_shape, dropout, use_bn):
     if dropout is None:
         return None
@@ -189,6 +190,7 @@ def alexnet_dp(input_shape, dropout, use_bn):
     return model
 
 
+# Same as alexnet_dp but max pooling is replaced with bigger strides in convolutions
 def alexnet_no_mp(input_shape, dropout, use_bn):
     if dropout is None:
         return None
@@ -369,12 +371,12 @@ def topN(filter_name, n):
     return list(sorted(filtered, key=lambda r: r[1]["val_loss"])[:n])
 
 
-top_alexnet = topN("alexnet", 2)
-top_inception = topN("inceptionv3", 2)
-top_alexnet_dp = topN("alexnet_dp", 2)
-top_alexnet_no_mp = topN("alexnet_no_mp", 2)
+top_alexnet = topN("alexnet", 1)
+top_inception = topN("inceptionv3", 1)
+top_alexnet_dp = topN("alexnet_dp", 1)
+top_alexnet_no_mp = topN("alexnet_no_mp", 1)
 handles = []
-top = top_alexnet + top_inception + top_alexnet_dp + top_alexnet_no_mp
+top = top_alexnet + top_alexnet_dp + top_alexnet_no_mp + top_inception
 for i in range(len(top)):
     node = top[i][0]
     result = top[i][1]
@@ -389,6 +391,6 @@ for i in range(len(top)):
 
 plt.legend(handles=handles)
 plt.ylabel("val_loss")
-plt.ylabel("epoch")
+plt.xlabel("epoch")
 plt.ylim(ymax=1)
 plt.show()
