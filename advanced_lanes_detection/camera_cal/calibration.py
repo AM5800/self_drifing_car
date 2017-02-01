@@ -77,8 +77,10 @@ if __name__ == "__main__":
             calibrator = ChessboardCalibrator(image_size)
             for img_file in glob.glob("calibration*.jpg"):
                 img = mpimg.imread(img_file)
-                # Crop image to make them all of the same size
-                img = img[0:image_size[0], 0:image_size[1], 0:image_size[2]]
+
+                if img.shape != image_size:
+                    print("Unexpected image shape", img.shape)
+                    continue
 
                 if not calibrator.add_chessboard_image(img, (9, 6)):
                     if not calibrator.add_chessboard_image(img, (9, 5)):
