@@ -82,7 +82,8 @@ if __name__ == "__main__":
                 img = img[0:image_size[0], 0:image_size[1], 0:image_size[2]]
 
                 if not calibrator.add_chessboard_image(img, (9, 6)):
-                    print("Chessboard pattern not found in", img_file)
+                    if not calibrator.add_chessboard_image(img, (9, 5)):
+                        print("Chessboard pattern not found in", img_file)
 
             calibrator.save(out_file)
 
@@ -95,5 +96,6 @@ if __name__ == "__main__":
         result = np.concatenate([src, dst], axis=1)
         plt.imshow(result)
         plt.show()
+
 
     main()
