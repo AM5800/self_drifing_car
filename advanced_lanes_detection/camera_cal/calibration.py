@@ -49,7 +49,6 @@ class ChessboardCalibrator:
     def save(self, file_name):
         self.__ensure_calibrated()
         pickle.dump({"image_size": self.__image_size, "mtx": self.__mtx, "dist": self.__dist}, open(file_name, "wb"))
-        pass
 
     def __ensure_calibrated(self):
         if self.__mtx is not None:
