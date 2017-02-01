@@ -16,8 +16,9 @@ Left - is original image. Righ is undistorted one
 `ChessboardCalibrator` is also able to save and load computed coefficients to file. Thus actual computation takes place only once.
 
 There were aslo a few minor issues while developing this part of project:
-1) Some images had size not equal to 720x1280. 
-2) OpenCV was not able to find chessboard pattern on 2 images. Documentation for `findChessboardCorners` [states](http://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#cv2.findChessboardCorners):
+Some images had size not equal to 720x1280. 
+
+OpenCV was not able to find chessboard pattern on 2 images. Documentation for `findChessboardCorners` [states](http://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#cv2.findChessboardCorners):
 > The function requires white space (like a square-thick border, the wider the better) around the board to make the detection more robust in various environments. Otherwise, if there is no border and the background is dark, the outer black squares cannot be segmented properly and so the square grouping and ordering algorithm fails.
 
 This does not hold for those mentioned images. 
