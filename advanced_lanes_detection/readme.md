@@ -4,14 +4,22 @@
 
 ####1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
-The code for this step is contained in file [camera_cal/calibration.py](camera_cal/calibration.py). I have created class ChessboardCalibrator to automate calibration process. I feed chessobaord images to this class via `add_chessboard_image` function. This functions accepts image and expected pattern size. Then I detect chessboard corners in the image with `cv2.findChessboardCorners`. If they are found I add them to `__image_points` list. 
+The code for this step is contained in file [camera_cal/calibration.py](camera_cal/calibration.py). I have created class `ChessboardCalibrator` to automate calibration process. I feed chessobaord images to this class via `add_chessboard_image` function. This functions accepts image and expected pattern size. Then I detect chessboard corners in the image with `cv2.findChessboardCorners`. If they are found I add them to `__image_points` list. 
 
 Then I prepare object points. Assuming that found image points are mapped to (x, y, 0) points on a plane. Object points are added to `__object_points` list.
 
 After all calibration images were processed I use `__object_points` and `__image_points` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result:
 
-![d][calibration.png]
+![img/calibration.png][img/calibration.png]
 Left - is original image. Righ is undistorted one
+
+`ChessboardCalibrator` is also able to save and load computed coefficients to file. Thus actual computation takes place only once.
+
+There were aslo a few minor issues while developing this part of project:
+1) Some images had size not equal to 720x1280. 
+2) OpenCV was not able to find chessboard pattern on 2 images. Documentation for `findChessboardCorners` `requires white space (like a square-thick border, the wider the better)`. This does not hold for those mentioned images. 
+
+For both cases I just skip _bad_ images. Because there is enough more then enough calibration data to do that.
 
 ###Pipeline (single images)
 
