@@ -10,7 +10,7 @@ Then I prepare object points. Assuming that found image points are mapped to (x,
 
 After all calibration images were processed I use `__object_points` and `__image_points` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result:
 
-![][calibration.png]
+![d][calibration.png]
 Left - is original image. Righ is undistorted one
 
 ###Pipeline (single images)
