@@ -72,10 +72,10 @@ class ChessboardCalibrator:
 if __name__ == "__main__":
     def main():
         image_size = (720, 1280, 3)
-        out_file = "../calibration.p"
+        out_file = "calibration.p"
         if not os.path.exists(out_file):
             calibrator = ChessboardCalibrator(image_size)
-            for img_file in glob.glob("calibration*.jpg"):
+            for img_file in glob.glob("camera_cal/calibration*.jpg"):
                 img = mpimg.imread(img_file)
 
                 if img.shape != image_size:
@@ -91,7 +91,7 @@ if __name__ == "__main__":
         else:
             calibrator = ChessboardCalibrator(file_name=out_file)
 
-        src = mpimg.imread("calibration5.jpg")
+        src = mpimg.imread("input/test_images/test1.jpg")
         dst = calibrator.undistort(src)
 
         result = np.concatenate([src, dst], axis=1)

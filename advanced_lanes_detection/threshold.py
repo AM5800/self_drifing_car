@@ -3,13 +3,13 @@ import glob
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-import util.util as util
+import util
 
 
 def apply_to_test_images(fun):
     out_dir = "out"
 
-    for img_path in glob.glob("../input/test_images/*"):
+    for img_path in glob.glob("input/test_images/*"):
         img = util.load_image_float(img_path)
         result = fun(img)
 
@@ -35,6 +35,7 @@ def find_lines(img, mag_threshold=(0.1, 0.8), dir_threshold=(np.pi / 7, np.pi / 
     beta = -90
 
     gray = np.clip(alpha * gray + beta, 0.0, 1.0)
+    return gray
 
     ksize = 3
     sobelx = cv2.Sobel(gray, cv2.CV_32F, 1, 0, ksize=ksize)
