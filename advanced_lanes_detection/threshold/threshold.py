@@ -3,21 +3,14 @@ import glob
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-
-
-def load_image_float(file_path):
-    img = plt.imread(file_path)
-    if type(img[0][0][0]) == np.uint8:
-        img = img.astype(np.float32) / 255.0
-
-    return img
+import util.util as util
 
 
 def apply_to_test_images(fun):
     out_dir = "out"
 
     for img_path in glob.glob("../test_images/static/*"):
-        img = load_image_float(img_path)
+        img = util.load_image_float(img_path)
         result = fun(img)
 
         if len(result.shape) == 2 or result.shape[2] == 1:
