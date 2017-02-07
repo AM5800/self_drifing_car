@@ -9,7 +9,7 @@ import util.util as util
 def apply_to_test_images(fun):
     out_dir = "out"
 
-    for img_path in glob.glob("../test_images/static/*"):
+    for img_path in glob.glob("../input/test_images/*"):
         img = util.load_image_float(img_path)
         result = fun(img)
 
@@ -27,18 +27,24 @@ def threshold(data, thresh_min, thresh_max):
     return result
 
 
-def find_lines(img, mag_threshold=(15, 100), dir_threshold=(np.pi / 7, np.pi / 2.5)):
+def find_lines(img, mag_threshold=(0.1, 0.8), dir_threshold=(np.pi / 7, np.pi / 2.5)):
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
-    gray = hsv[:, :, 1]
+    gray = hsv[:, :, 2]
+
+    alpha = 100
+    beta = -90
+
+    gray = np.clip(alpha * gray + beta, 0.0, 1.0)
 
     ksize = 3
-    sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=ksize)
-    sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=ksize)
+    sobelx = cv2.Sobel(gray, cv2.CV_32F, 1, 0, ksize=ksize)
+    sobely = cv2.Sobel(gray, cv2.CV_32F, 0, 1, ksize=ksize)
 
     magnitude = np.sqrt(sobelx ** 2 + sobely ** 2)
+
     scale_factor = np.max(magnitude)
-    magnitude = (255 * magnitude / scale_factor).astype(np.uint8)
-    magnitude = threshold(magnitude, mag_threshold[0], mag_threshold[1])
+
+    magnitude = threshold(magnitude / scale_factor, mag_threshold[0], mag_threshold[1])
 
     direction = np.arctan2(np.absolute(sobely), np.absolute(sobelx))
     direction = threshold(direction, dir_threshold[0], dir_threshold[1])
