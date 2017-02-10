@@ -6,11 +6,11 @@ import numpy as np
 class Warper:
     def __init__(self, img_shape):
         self.__img_shape = img_shape
-        top = 500
-        bottom = 700
+        top = 460
+        bottom = 660
         xcenter = img_shape[1] / 2
-        top_half_width = 170
-        bottom_half_width = 600
+        top_half_width = 107
+        bottom_half_width = 650
 
         self.__src = np.float32(
             [[xcenter - top_half_width, top],
@@ -19,17 +19,17 @@ class Warper:
              [xcenter + bottom_half_width, bottom]])
 
         self.__dst = np.float32(
-            [[0, top],
-             [img_shape[1], top],
-             [0, bottom],
-             [img_shape[1], bottom]])
+            [[0, 0],
+             [img_shape[1], 0],
+             [0, img_shape[0]],
+             [img_shape[1], img_shape[0]]])
 
     def warp(self, img):
         return self.__warp(img, self.__src, self.__dst)
 
     def __warp(self, img, src, dst):
         if img.shape != self.__img_shape:
-            raise Exception("Invalid image size. Expected {0}, but got {1}" % img.shape, self.__img_shape)
+            raise Exception("Invalid image size. Expected {0}, but got {1}".format(img.shape, self.__img_shape))
 
         M = cv2.getPerspectiveTransform(src, dst)
 
