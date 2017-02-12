@@ -37,6 +37,7 @@ I used a combination of direction, magnitude and brightness/contrast thresholds 
 First I converted input image to HSV colorspace and taken second channel. This is beneficial because:
 * This channel is more robust to lighting conditions change
 * On a simple grayscale image yellow lines are almost invisible
+
 Following steps are pretty self-explainatory, except for contrast step. Intuition here is that lane lines are specially made to have very high contrast. So instead of color thresholding I tried to increase image contrast by a factor of 100. This, of course leads to almost white image so I also decreased image brightness.
 
 Here's an example of my output for this step.
