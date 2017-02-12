@@ -14,7 +14,7 @@ After all calibration images were processed I used `__object_points` and `__imag
 
 `ChessboardCalibrator` is also able to save and load computed coefficients to file. Thus actual computation takes place only once.
 
-There were aslo a few minor issues while developing this part of project:
+There were also a few minor issues while developing this part of project:
 
 1. Some images had size not equal to 720x1280. 
 2. OpenCV was not able to find chessboard pattern on 2 images. Documentation for `findChessboardCorners` [states](http://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#cv2.findChessboardCorners):
