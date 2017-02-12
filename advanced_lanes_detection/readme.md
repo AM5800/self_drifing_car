@@ -89,7 +89,10 @@ If new lines fail on those checks or no new lines found at all - I just leave pr
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+Curvature radius is computed by this formula:
+[formula]
+
+Car offset is computed by this formula: 
 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
