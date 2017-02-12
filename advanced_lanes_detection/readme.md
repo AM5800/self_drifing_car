@@ -63,7 +63,7 @@ self.dst = np.float32(
 ```
 I verified that my perspective transform was working as expected by warping an image where car is moving in the center and lane lines are straight. After warping such image lane lines should were almost vertical.
 
-![Warping result](output_imagex/warp_result.png)
+![Warping result](output_images/warp_result.png)
 
 ####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
