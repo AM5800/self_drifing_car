@@ -96,9 +96,7 @@ Car offset is computed by this formula:
 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
-
-![alt text][image6]
+![final result](output_images/final.png)
 
 ---
 
