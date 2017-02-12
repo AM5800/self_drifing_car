@@ -74,7 +74,16 @@ I verified that my perspective transform was working as expected by warping an i
 
 ####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+To identify lines I merge 2 consecutive warped and thresholded frames into one image:
+![queue](output_images/queue.png)
+This helps to detect dashed lines and removes final image jittering. Then I compute histogram and detect two highest peaks in it (keeping in mind that there should be some gap between them).
+
+After peaks detected I launch a sliding window from each peak's X-coordinate. This hepls to separate one line from another and to separate lane pixels from other pixels. Result is separate groups of pixels for left and right lines. Those pixels are then fitted to 2nd degree polynomial via `numpy.polyfit` function.
+To ensure that found lines are actually lane lines I execute 2 simple sanity checks:
+1. Distance between lines should be at least 500 pixels
+2. Curvature radius differs no more than 2 times
+
+If new lines fail on those checks or no new lines found at all - I just leave previous lines on scene.
 
 ![alt text][image5]
 
