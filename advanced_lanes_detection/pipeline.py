@@ -1,22 +1,17 @@
-import calibration
-import warp
-import util
-import threshold
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-import detector
-import glob
-import cv2
 from moviepy.editor import *
-from moviepy import *
-from calibration import ChessboardCalibrator
 from util import *
-import os
+import detector
+import threshold
+import warp
+from calibration import ChessboardCalibrator
 
 img_shape = (720, 1280)
 chessboard_calibrator = ChessboardCalibrator(file_name="calibration.p")
 warper = warp.Warper(img_shape)
-lanes_detector = detector.LanesDetector(img_shape, 250, 5, 50, 3)
+lanes_detector = detector.LanesDetector(img_shape, 100, 5, 50, 2)
 
 frame = 0
 
@@ -120,35 +115,10 @@ def print_overlay_info(left_line, result, right_line):
     draw_offset_marker(result, int((left_x + right_x) / 2), img_shape[0] - 30, (0, 255, 0))
 
 
-def warped_colored(img):
-    img = img.astype(np.float32) / 255.0
-
-    calibrated = chessboard_calibrator.undistort(img)
-    warped = warper.warp(calibrated)
-
-    result = warped
-    return (result * 255).astype(np.uint8)
-
-
-def warped_thresholded(img):
-    img = img.astype(np.float32) / 255.0
-
-    calibrated = chessboard_calibrator.undistort(img)
-    thresholded = threshold.find_lines(calibrated)
-    warped = warper.warp(thresholded)
-
-    result = cv2.cvtColor(warped, cv2.COLOR_GRAY2RGB)
-    return (result * 255).astype(np.uint8)
-
-
 out_video = 'result.mp4'
 in_video = "input/project_video.mp4"
 main_video = VideoFileClip(in_video)
 main_video = main_video.fl_image(process_image)
 
-# additional_video = VideoFileClip(in_video)
-# additional_video = additional_video.fl_image(warped_thresholded)
-#
-# result_video = clips_array([[main_video], [additional_video]])
 
 main_video.write_videofile(out_video, audio=False, fps=1)
