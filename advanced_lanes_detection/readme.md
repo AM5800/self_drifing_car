@@ -39,33 +39,31 @@ I used a combination of color and brightness/contrast thresholds to generate a b
 
 ####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
+The code for my perspective transform is all located in [Warper](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/warp.py#L6) class. It has two self describing functions: `warp` and `unwarp`. Coefficients for transformation are hardcoded and look like this:
 
 ```
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
+top = 460 # Conrols height of upper segment of trapeze
+bottom = 660 # Conrols height of bottom segment of trapeze
+xcenter = img_shape[1] / 2
+top_half_width = 107 # Half width of top part of trapeze
+bottom_half_width = 650
+
+self.src = np.float32(
+    [[xcenter - top_half_width, top],
+     [xcenter + top_half_width, top],
+     [xcenter + bottom_half_width, bottom],
+     [xcenter - bottom_half_width, bottom]])
+
+self.dst = np.float32(
+    [[0, 0],
+     [img_shape[1], 0],
+     [img_shape[1], img_shape[0]],
+     [0, img_shape[0]]])
 
 ```
-This resulted in the following source and destination points:
+I verified that my perspective transform was working as expected by warping an image where car is moving in the center and lane lines are straight. After warping such image lane lines should were almost vertical.
 
-| Source        | Destination   | 
-|:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
-
-I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
-
-![alt text][image4]
+![Warping result][output_imagex/warp_result.png]
 
 ####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
