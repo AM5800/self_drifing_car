@@ -68,7 +68,7 @@ self.dst = np.float32(
      [0, img_shape[0]]])
 
 ```
-I verified that my perspective transform was working as expected by warping an image where car is moving in the center and lane lines are straight. After warping such image lane lines should were almost vertical.
+I verified that my perspective transform was working as expected by warping an image where car is moving in the center and lane lines are straight. After warping such image lane lines were almost vertical.
 
 ![Warping result](output_images/warp_result.png)
 
@@ -76,7 +76,7 @@ I verified that my perspective transform was working as expected by warping an i
 
 To identify lines I merge 2 consecutive warped and thresholded frames into one image:
 ![queue](output_images/queue.png)
-This helps to detect dashed lines and removes final image jittering. Then I compute histogram and detect two highest peaks in it (keeping in mind that there should be some gap between them).
+This helps to detect dashed lines and removes final image jittering. Then I compute [histogram](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/detector.py#L86) and [detect](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/detector.py#L119) two highest peaks in it (keeping in mind that there should be some gap between them).
 
 After peaks detected I launch a sliding window from each peak's X-coordinate. This hepls to separate one line from another and to separate lane pixels from other pixels. Result is separate groups of pixels for left and right lines. Those pixels are then fitted to 2nd degree polynomial via `numpy.polyfit` function.
 To ensure that found lines are actually lane lines I execute 2 simple sanity checks:
