@@ -11,14 +11,20 @@ from moviepy.editor import *
 from moviepy import *
 from calibration import ChessboardCalibrator
 from util import *
+import os
 
 img_shape = (720, 1280)
 chessboard_calibrator = ChessboardCalibrator(file_name="calibration.p")
 warper = warp.Warper(img_shape)
-lanes_detector = detector.LanesDetector(img_shape, 100, 5, 50, 3)
+lanes_detector = detector.LanesDetector(img_shape, 100, 5, 50, 2)
+
+frame = 0
 
 
 def process_image(img):
+    global frame
+    frame += 1
+
     img = img_to_float(img)
 
     calibrated = chessboard_calibrator.undistort(img)
@@ -37,21 +43,49 @@ def process_image(img):
 
     overlay_img = np.zeros((*img_shape, 3), np.float32)
 
-    left_poly = left_line.to_cv_points(ploty)
-    right_poly = right_line.to_cv_points(ploty)
+    left_points = left_line.to_cv_points(ploty)
+    right_points = right_line.to_cv_points(ploty)
 
-    concatenated = np.concatenate([left_poly, right_poly[::-1]])
+    concatenated = np.concatenate([left_points, right_points[::-1]])
 
     color_green = (0, 1, 0)
     color_red = (1.0, 0.0, 0)
 
     cv2.fillPoly(overlay_img, [concatenated], color_green)
-    cv2.polylines(overlay_img, [left_poly], False, color_red, thickness=30)
-    cv2.polylines(overlay_img, [right_poly], False, color_red, thickness=30)
+    cv2.polylines(overlay_img, [left_points], False, color_red, thickness=30)
+    cv2.polylines(overlay_img, [right_points], False, color_red, thickness=30)
+
+    if frame == 5:
+        debug_img = lanes_detector.merge_queue()
+        histogram = np.sum(debug_img[int(debug_img.shape[0] / 2):, :], axis=0)
+        plt.plot(histogram)
+        plt.show()
+
+        debug_img = cv2.cvtColor(debug_img, cv2.COLOR_GRAY2RGB)
+        plt.imsave("out/queue.png", debug_img)
+
+        cv2.polylines(debug_img, [left_points], False, color_red, thickness=5)
+        cv2.polylines(debug_img, [right_points], False, color_green, thickness=5)
+        plt.imsave("out/detected.png", debug_img)
 
     overlay_img = warper.unwarp(overlay_img)
 
     result = cv2.addWeighted(img, 0.8, overlay_img, 0.2, 0)
+
+    if frame == 5:
+        debug_img = lanes_detector.merge_queue()
+        histogram = np.sum(debug_img[int(debug_img.shape[0] / 2):, :], axis=0)
+        plt.plot(histogram)
+        plt.show()
+
+        debug_img = cv2.cvtColor(debug_img, cv2.COLOR_GRAY2RGB)
+        plt.imsave("out/queue.png", debug_img)
+
+        cv2.polylines(debug_img, [left_points], False, color_red, thickness=5)
+        cv2.polylines(debug_img, [right_points], False, color_green, thickness=5)
+        plt.imsave("out/detected.png", debug_img)
+        plt.imsave("out/final.png", result)
+
     result = util.img_to_int(result)
 
     print_overlay_info(left_line, result, right_line)
@@ -76,7 +110,7 @@ def print_overlay_info(left_line, result, right_line):
     cv2.putText(result, offset_msg, (50, 80), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
     draw_offset_marker(result, int(img_shape[1] / 2), img_shape[0] - 50, (0, 0, 255))
-    draw_offset_marker(result, int((left_x + right_x)/2), img_shape[0] - 30, (0, 255, 0))
+    draw_offset_marker(result, int((left_x + right_x) / 2), img_shape[0] - 30, (0, 255, 0))
 
 
 def warped_colored(img):
@@ -110,4 +144,4 @@ main_video = main_video.fl_image(process_image)
 #
 # result_video = clips_array([[main_video], [additional_video]])
 
-main_video.write_videofile(out_video, audio=False)
+main_video.write_videofile(out_video, audio=False, fps=1)

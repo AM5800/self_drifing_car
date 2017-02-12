@@ -9,7 +9,7 @@ import util
 def apply_to_test_images(fun):
     out_dir = "out"
 
-    for img_path in glob.glob("test_images/static_project_video/*"):
+    for img_path in glob.glob("input/test_images/*"):
         img = util.load_image_float(img_path)
         result = fun(img)
 

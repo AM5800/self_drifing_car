@@ -1,6 +1,10 @@
 import numpy as np
 import queue
-import cv2
+import util
+from warp import Warper
+import threshold
+import matplotlib.pyplot as plt
+import os
 
 
 class PolyLine:
@@ -106,7 +110,8 @@ class LanesDetector:
         left = PolyLine(all_left_ys, all_left_xs)
         right = PolyLine(all_right_ys, all_right_xs)
 
-        self.__try_set_new_lines(left, right)
+        if not self.__try_set_new_lines(left, right):
+            return
 
     def merge_queue(self):
         return np.clip(np.sum(self.__image_queue, axis=0), 0, 1)

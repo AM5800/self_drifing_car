@@ -40,7 +40,6 @@ class Warper:
     def unwarp(self, img):
         return self.__warp(img, self.dst, self.src)
 
-
 if __name__ == "__main__":
     img = plt.imread("test_images/vlcsnap-2017-02-02-08h52m36s50.png")
     warper = Warper(img.shape)
