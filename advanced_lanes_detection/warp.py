@@ -28,7 +28,7 @@ class Warper:
         return self.__warp(img, self.__src, self.__dst)
 
     def __warp(self, img, src, dst):
-        if img.shape != self.__img_shape:
+        if img.shape[0:2] != self.__img_shape[0:2]:
             raise Exception("Invalid image size. Expected {0}, but got {1}".format(img.shape, self.__img_shape))
 
         M = cv2.getPerspectiveTransform(src, dst)

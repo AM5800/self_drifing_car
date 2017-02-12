@@ -9,7 +9,7 @@ import util
 def apply_to_test_images(fun):
     out_dir = "out"
 
-    for img_path in glob.glob("input/test_images/*"):
+    for img_path in glob.glob("test_images/static_project_video/*"):
         img = util.load_image_float(img_path)
         result = fun(img)
 
@@ -27,17 +27,17 @@ def threshold(data, thresh_min, thresh_max):
     return result
 
 
-def find_lines(img, mag_threshold=(0.1, 0.8), dir_threshold=(np.pi / 7, np.pi / 2.5)):
+#def find_lines(img, mag_threshold=(0.1, 0.8), dir_threshold=(np.pi / 7, np.pi / 2.5)):
+def find_lines(img, mag_threshold=(0.1, 0.8), dir_threshold=(0.7, 1.3)):
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     gray = hsv[:, :, 2]
 
     alpha = 100
-    beta = -90
+    beta = -70
 
-    gray = np.clip(alpha * gray + beta, 0.0, 1.0)
-    return gray
+    contrast = np.clip(alpha * gray + beta, 0.0, 1.0)
 
-    ksize = 3
+    ksize = 15
     sobelx = cv2.Sobel(gray, cv2.CV_32F, 1, 0, ksize=ksize)
     sobely = cv2.Sobel(gray, cv2.CV_32F, 0, 1, ksize=ksize)
 
@@ -50,7 +50,7 @@ def find_lines(img, mag_threshold=(0.1, 0.8), dir_threshold=(np.pi / 7, np.pi / 
     direction = np.arctan2(np.absolute(sobely), np.absolute(sobelx))
     direction = threshold(direction, dir_threshold[0], dir_threshold[1])
 
-    return direction * magnitude
+    return direction * magnitude * contrast
 
 
 if __name__ == "__main__":
