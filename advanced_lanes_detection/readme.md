@@ -30,12 +30,12 @@ For both cases I just skip _bad_ images. Because there is more than enough calib
 ####1. Provide an example of a distortion-corrected image.
 To demonstrate this step I just create an instance of ChessboardCalibrator, giving it a calibration data file created at previous step and call `calibrator.undistort(image)`
 
-![Calibration example][img/calibration2.png]
+![Calibration example](img/calibration2.png)
 
 ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 I used a combination of color and brightness/contrast thresholds to generate a binary image ([threshold_lines function](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/threshold.py#L30).  Here's an example of my output for this step.
 
-![threshold example](threshold.png)
+![threshold example](img/threshold.jpg)
 
 ####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
