@@ -116,7 +116,7 @@ Here's a [link to my video result](https://youtu.be/tPlNkCYSdYI)
 If we compare this project to very first lane detection one - I don't think it improved a lot:
 There are still lots of "hyperparameters" such as magnitude threshold which should be picked by hand. And they might be wrong if environment changes signficantly - like rain or snow or night. 
 
-This algorithm will most likely fail if there are other cars infront.
+This algorithm will most likely fail if there are other cars ahead.
 
 Changing lane is still a problem - algorithm assumes there are only 2 lane lines out there. But to change lane we need to see 3 lines.
 
