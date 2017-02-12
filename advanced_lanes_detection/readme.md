@@ -23,7 +23,7 @@ There were aslo a few minor issues while developing this part of project:
 
    This does not hold for those mentioned images. 
 
-For both cases I just skip _bad_ images. Because there is enough more then enough calibration data to do that.
+For both cases I just skip _bad_ images. Because there is more than enough calibration data to do that.
 
 ###Pipeline (single images)
 
