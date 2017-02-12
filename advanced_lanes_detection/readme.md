@@ -80,6 +80,7 @@ This helps to detect dashed lines and removes final image jittering. Then I comp
 
 After peaks detected I launch a [sliding window](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/detector.py#L91) from each peak's X-coordinate. This hepls to separate one line from another and to separate lane pixels from other pixels. Result is separate groups of pixels for left and right lines. Those pixels are then [fitted](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/detector.py#L110) to 2nd degree polynomial via `numpy.polyfit` function.
 To ensure that found lines are actually lane lines I [execute](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/detector.py#L61) 2 simple sanity checks:
+
 1. Distance between lines should be at least 500 pixels
 2. Curvature radius differs no more than 2 times
 
