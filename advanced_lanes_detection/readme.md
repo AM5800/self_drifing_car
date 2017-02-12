@@ -85,7 +85,7 @@ To ensure that found lines are actually lane lines I execute 2 simple sanity che
 
 If new lines fail on those checks or no new lines found at all - I just leave previous lines on scene.
 
-![alt text][image5]
+![warped lines](output_images/detected.png)
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
