@@ -112,5 +112,14 @@ Here's a [link to my video result](https://youtu.be/tPlNkCYSdYI)
 
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+If we compare this project to very first lane detection one - I don't think it improved a lot:
+There are still lots of "hyperparameters" such as magnitude threshold which should be picked by hand. And they might be wrong if environment changes signficantly - like rain or snow or night. 
 
+This algorithm will most likely fail if there are other cars infront.
+
+Changing lane is still a problem - algorithm assumes there are only 2 lane lines out there. But to change lane we need to see 3 lines.
+
+While watching challenge videos I have noticed that I have to adjust some of my parameters for them.
+So to work furhter I would like to automate parameter search with grid, like in previous works. We can create validation set by marking zones where lines should be detected and where not. And find such hyperparameters that maximize that score.
+
+I also think that image segmentation with Neural Networks will be very good here. The only drawback - we need a lot of marked data for this.
