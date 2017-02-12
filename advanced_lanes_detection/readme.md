@@ -8,7 +8,7 @@ The code for this step is contained in file [calibration.py](calibration.py). I 
 
 Then I prepare object points. Assuming that found image points are mapped to (x, y, 0) points on a plane. Object points are added to `__object_points` list.
 
-After all calibration images were processed I use `__object_points` and `__image_points` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result:
+After all calibration images were processed I used `__object_points` and `__image_points` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result:
 
 ![output_images/calibration.png](output_images/calibration.png)
 
@@ -33,7 +33,13 @@ To demonstrate this step I just create an instance of ChessboardCalibrator, givi
 ![Calibration example](output_images/calibration2.png)
 
 ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
-I used a combination of color and brightness/contrast thresholds to generate a binary image ([threshold_lines function](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/threshold.py#L30).  Here's an example of my output for this step.
+I used a combination of direction, magnitude and brightness/contrast thresholds to generate a binary image ([threshold_lines function](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/threshold.py#L30). 
+First I converted input image to HSV colorspace and taken second channel. This is beneficial because:
+* This channel is more robust to lighting conditions change
+* On a simple grayscale image yellow lines are almost invisible
+Following steps are pretty self-explainatory, except for contrast step. Intuition here is that lane lines are specially made to have very high contrast. So instead of color thresholding I tried to increase image contrast by a factor of 100. This, of course leads to almost white image so I also decreased image brightness.
+
+Here's an example of my output for this step.
 
 ![threshold example](output_images/threshold.jpg)
 
