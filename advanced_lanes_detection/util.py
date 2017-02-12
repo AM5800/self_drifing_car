@@ -16,5 +16,9 @@ def img_to_float(img):
 
     return img.astype(np.float32) / 255.0
 
+
 def img_to_int(img):
-    pass
+    if img.dtype == np.uint8:
+        return img
+
+    return (img * 255).astype(np.uint8)

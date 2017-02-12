@@ -2,6 +2,7 @@ import numpy as np
 import queue
 import cv2
 
+
 class PolyLine:
     def __init__(self, ys, xs):
         self.__coeffs = np.polyfit(ys, xs, 2)
@@ -12,14 +13,18 @@ class PolyLine:
     def to_cv_points(self, ys):
         return np.array(list(zip(self.apply(ys), ys)), np.int32)
 
+    def r_curvature(self, y):
+        nominator = (1 + (2 * self.__coeffs[0] * y + self.__coeffs[1]) ** 2) ** 1.5
+        denominator = np.absolute(2 * self.__coeffs[0])
+        return nominator / denominator
+
 
 def all_not_none(*items):
     return all(v is not None for v in items)
 
 
 class LanesDetector:
-    def __init__(self, img_shape, sliding_window_width, vertical_windows_num, window_shift_tolerance, img_buffer_len, max_tracking_attempts):
-        self.__max_track_attempts = max_tracking_attempts
+    def __init__(self, img_shape, sliding_window_width, vertical_windows_num, window_shift_tolerance, img_buffer_len):
         self.__img_buffer_len = img_buffer_len
         self.__window_shift_tolerance = window_shift_tolerance
         self.__vertical_windows_num = vertical_windows_num
@@ -43,31 +48,23 @@ class LanesDetector:
             self.__try_set_new_lines(None, None)
             return
 
-        if self.__try_track():
-            return
-
         self.__detect()
-
-    def __try_track(self):
-        if self.left_line is None or self.right_line is None:
-            return False
-
-        input_image = self.__merge_queue()
-        mask = np.zeros_like(input_image)
-
-        ploty = np.linspace(0, input_image.shape[0] - 1, input_image.shape[0])
-        left_poly = self.left_line.to_cv_points(ploty)
-        right_poly = self.right_line.to_cv_points(ploty)
-
-        cv2.polylines(mask, [left_poly], False, (1.0, 0.0, 0), thickness=self.__sliding_window_width)
-        cv2.polylines(mask, [right_poly], False, (1.0, 0.0, 0), thickness=self.__sliding_window_width)
-
-        return False
 
     def __try_set_new_lines(self, left, right):
         if left is None or right is None:
-            self.left_line = None
-            self.right_line = None
+            return False
+
+        # Simple sanity check - lines should have enough space between them.
+        h = self.__img_shape[0] * 0.9
+        distance = left.apply(h) - right.apply(h)
+        if abs(distance) < 500:
+            return False
+
+        # Another sanity check - radiuses of both lines should be close to equal
+        lr = left.r_curvature(h)
+        rr = right.r_curvature(h)
+        radius_f = max(lr, rr) / min(lr, rr)
+        if radius_f > 2:
             return False
 
         self.left_line = left
@@ -75,7 +72,7 @@ class LanesDetector:
         return True
 
     def __detect(self):
-        input_image = self.__merge_queue()
+        input_image = self.merge_queue()
 
         all_left_xs = []
         all_left_ys = []
@@ -111,7 +108,7 @@ class LanesDetector:
 
         self.__try_set_new_lines(left, right)
 
-    def __merge_queue(self):
+    def merge_queue(self):
         return np.clip(np.sum(self.__image_queue, axis=0), 0, 1)
 
     def __get_left_right_peaks(self, histogram):

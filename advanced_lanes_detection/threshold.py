@@ -27,8 +27,7 @@ def threshold(data, thresh_min, thresh_max):
     return result
 
 
-#def find_lines(img, mag_threshold=(0.1, 0.8), dir_threshold=(np.pi / 7, np.pi / 2.5)):
-def find_lines(img, mag_threshold=(0.1, 0.8), dir_threshold=(0.7, 1.3)):
+def threshold_lines(img, mag_threshold=(0.1, 0.8), dir_threshold=(0.7, 1.3)):
     hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     gray = hsv[:, :, 2]
 
@@ -54,4 +53,4 @@ def find_lines(img, mag_threshold=(0.1, 0.8), dir_threshold=(0.7, 1.3)):
 
 
 if __name__ == "__main__":
-    apply_to_test_images(find_lines)
+    apply_to_test_images(threshold_lines)
