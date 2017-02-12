@@ -121,7 +121,7 @@ This algorithm will most likely fail if there are other cars infront.
 Changing lane is still a problem - algorithm assumes there are only 2 lane lines out there. But to change lane we need to see 3 lines.
 
 Region where lines are being searched is fixed. This makes it difficult to detect lines in sharp turns or on steep terrain.
----
+
 While watching challenge videos I have noticed that I have to adjust some of my parameters for them.
 So to work furhter I would like to automate parameter search with grid, like in previous works. We can create validation set by marking zones where lines should be detected and where not. And find such hyperparameters that maximize that score.
 
