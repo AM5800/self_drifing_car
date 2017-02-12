@@ -57,10 +57,6 @@ def process_image(img):
 
     if frame == 5:
         debug_img = lanes_detector.merge_queue()
-        histogram = np.sum(debug_img[int(debug_img.shape[0] / 2):, :], axis=0)
-        plt.plot(histogram)
-        plt.show()
-
         debug_img = cv2.cvtColor(debug_img, cv2.COLOR_GRAY2RGB)
         plt.imsave("out/queue.png", debug_img)
 
@@ -72,11 +68,10 @@ def process_image(img):
 
     result = cv2.addWeighted(img, 0.8, overlay_img, 0.2, 0)
 
+    result = img_to_int(result)
+
     if frame == 5:
         debug_img = lanes_detector.merge_queue()
-        histogram = np.sum(debug_img[int(debug_img.shape[0] / 2):, :], axis=0)
-        plt.plot(histogram)
-        plt.show()
 
         debug_img = cv2.cvtColor(debug_img, cv2.COLOR_GRAY2RGB)
         plt.imsave("out/queue.png", debug_img)
@@ -85,8 +80,6 @@ def process_image(img):
         cv2.polylines(debug_img, [right_points], False, color_green, thickness=5)
         plt.imsave("out/detected.png", debug_img)
         plt.imsave("out/final.png", result)
-
-    result = util.img_to_int(result)
 
     print_overlay_info(left_line, result, right_line)
 
@@ -98,15 +91,22 @@ def draw_offset_marker(result, x, y, color):
 
 
 def print_overlay_info(left_line, result, right_line):
-    h = img_shape[0] - 100
-    curvature = left_line.r_curvature(h) + right_line.r_curvature(h) / 2
+    h = img_shape[0] # making measurements at the bottom of the image - where the car is
+
+    ym_per_pix = 30 / 720
+    xm_per_pix = 3.7 / 700
+
+    real_left_line = left_line.scale(ym_per_pix, xm_per_pix)
+    real_right_line = right_line.scale(ym_per_pix, xm_per_pix)
+
+    curvature = real_left_line.r_curvature(h) + real_right_line.r_curvature(h) / 2
     left_x = left_line.apply(h)
     right_x = right_line.apply(h)
-    offset = (right_x - left_x) / 2 + left_x - img_shape[1] / 2
+    offset = ((right_x - left_x) / 2 + left_x - img_shape[1] / 2) * xm_per_pix
     font = cv2.FONT_HERSHEY_SIMPLEX
-    curvature_msg = "Curvature: {0:.2f}".format(curvature)
+    curvature_msg = "Curvature: {0:.2f} m".format(curvature)
     cv2.putText(result, curvature_msg, (50, 50), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
-    offset_msg = "Offset: {0:.2f}".format(offset)
+    offset_msg = "Offset: {0:.2f} m".format(offset)
     cv2.putText(result, offset_msg, (50, 80), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
     draw_offset_marker(result, int(img_shape[1] / 2), img_shape[0] - 50, (0, 0, 255))

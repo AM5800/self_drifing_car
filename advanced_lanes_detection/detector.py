@@ -1,26 +1,31 @@
 import numpy as np
 import queue
-import util
-from warp import Warper
-import threshold
-import matplotlib.pyplot as plt
-import os
 
 
 class PolyLine:
-    def __init__(self, ys, xs):
-        self.__coeffs = np.polyfit(ys, xs, 2)
+    def __init__(self, ys, xs, ym_per_pix=1.0, xm_per_pix=1.0):
+        self.__ys = ys
+        self.__xs = xs
+        self.__ym_per_pix = ym_per_pix
+        self.__xm_per_pix = xm_per_pix
+        self.__coeffs = np.polyfit(ys * ym_per_pix, xs * xm_per_pix, 2)
 
     def apply(self, ys):
-        return self.__coeffs[0] * ys ** 2 + self.__coeffs[1] * ys + self.__coeffs[2]
+        scaled_ys = ys * self.__ym_per_pix
+        return self.__coeffs[0] * scaled_ys ** 2 + self.__coeffs[1] * scaled_ys + self.__coeffs[2]
 
     def to_cv_points(self, ys):
-        return np.array(list(zip(self.apply(ys), ys)), np.int32)
+        scaled_ys = ys * self.__ym_per_pix
+        return np.array(list(zip(self.apply(scaled_ys), scaled_ys)), np.int32)
 
     def r_curvature(self, y):
-        nominator = (1 + (2 * self.__coeffs[0] * y + self.__coeffs[1]) ** 2) ** 1.5
+        scaled_y = y * self.__ym_per_pix
+        nominator = (1 + (2 * self.__coeffs[0] * scaled_y + self.__coeffs[1]) ** 2) ** 1.5
         denominator = np.absolute(2 * self.__coeffs[0])
         return nominator / denominator
+
+    def scale(self, ym_per_pix, xm_per_px):
+        return PolyLine(self.__ys, self.__xs, ym_per_pix, xm_per_px)
 
 
 def all_not_none(*items):
@@ -107,8 +112,8 @@ class LanesDetector:
             self.__try_set_new_lines(None, None)
             return
 
-        left = PolyLine(all_left_ys, all_left_xs)
-        right = PolyLine(all_right_ys, all_right_xs)
+        left = PolyLine(np.array(all_left_ys), np.array(all_left_xs))
+        right = PolyLine(np.array(all_right_ys), np.array(all_right_xs))
 
         if not self.__try_set_new_lines(left, right):
             return
