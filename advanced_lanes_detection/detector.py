@@ -4,8 +4,8 @@ import queue
 
 class PolyLine:
     def __init__(self, ys, xs, ym_per_pix=1.0, xm_per_pix=1.0):
-        self.__ys = ys
-        self.__xs = xs
+        self.ys = ys
+        self.xs = xs
         self.__ym_per_pix = ym_per_pix
         self.__xm_per_pix = xm_per_pix
         self.__coeffs = np.polyfit(ys * ym_per_pix, xs * xm_per_pix, 2)
@@ -25,7 +25,7 @@ class PolyLine:
         return nominator / denominator
 
     def scale(self, ym_per_pix, xm_per_px):
-        return PolyLine(self.__ys, self.__xs, ym_per_pix, xm_per_px)
+        return PolyLine(self.ys, self.xs, ym_per_pix, xm_per_px)
 
 
 def all_not_none(*items):

@@ -16,7 +16,7 @@ import os
 img_shape = (720, 1280)
 chessboard_calibrator = ChessboardCalibrator(file_name="calibration.p")
 warper = warp.Warper(img_shape)
-lanes_detector = detector.LanesDetector(img_shape, 100, 5, 50, 2)
+lanes_detector = detector.LanesDetector(img_shape, 250, 5, 50, 3)
 
 frame = 0
 
@@ -49,20 +49,11 @@ def process_image(img):
     concatenated = np.concatenate([left_points, right_points[::-1]])
 
     color_green = (0, 1, 0)
-    color_red = (1.0, 0.0, 0)
+    color_red = (1, 0, 0)
 
     cv2.fillPoly(overlay_img, [concatenated], color_green)
     cv2.polylines(overlay_img, [left_points], False, color_red, thickness=30)
     cv2.polylines(overlay_img, [right_points], False, color_red, thickness=30)
-
-    if frame == 5:
-        debug_img = lanes_detector.merge_queue()
-        debug_img = cv2.cvtColor(debug_img, cv2.COLOR_GRAY2RGB)
-        plt.imsave("out/queue.png", debug_img)
-
-        cv2.polylines(debug_img, [left_points], False, color_red, thickness=5)
-        cv2.polylines(debug_img, [right_points], False, color_green, thickness=5)
-        plt.imsave("out/detected.png", debug_img)
 
     overlay_img = warper.unwarp(overlay_img)
 
@@ -71,19 +62,35 @@ def process_image(img):
     result = img_to_int(result)
 
     if frame == 5:
-        debug_img = lanes_detector.merge_queue()
-
-        debug_img = cv2.cvtColor(debug_img, cv2.COLOR_GRAY2RGB)
-        plt.imsave("out/queue.png", debug_img)
-
-        cv2.polylines(debug_img, [left_points], False, color_red, thickness=5)
-        cv2.polylines(debug_img, [right_points], False, color_green, thickness=5)
-        plt.imsave("out/detected.png", debug_img)
-        plt.imsave("out/final.png", result)
+        save_debug_images(left_line, right_line, result, ploty)
 
     print_overlay_info(left_line, result, right_line)
 
     return result
+
+
+def set_color(img, xs, ys, color):
+    for i in range(len(xs)):
+        x = xs[i]
+        y = ys[i]
+        img[y][x] = color
+
+
+def save_debug_images(left_line, right_line, result, ploty):
+    left_points = left_line.to_cv_points(ploty)
+    right_points = right_line.to_cv_points(ploty)
+
+    debug_img = lanes_detector.merge_queue()
+    debug_img = cv2.cvtColor(debug_img, cv2.COLOR_GRAY2RGB)
+    plt.imsave("out/queue.png", debug_img)
+
+    set_color(debug_img, left_line.xs, left_line.ys, (0, 0, 1))
+    set_color(debug_img, right_line.xs, right_line.ys, (1, 0, 0))
+
+    cv2.polylines(debug_img, [left_points], False, (1, 1, 0), thickness=5)
+    cv2.polylines(debug_img, [right_points], False, (1, 1, 0), thickness=5)
+    plt.imsave("out/detected.png", debug_img)
+    plt.imsave("out/final.png", result)
 
 
 def draw_offset_marker(result, x, y, color):
