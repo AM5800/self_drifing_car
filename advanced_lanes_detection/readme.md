@@ -78,8 +78,8 @@ To identify lines I merge 2 consecutive warped and thresholded frames into one i
 ![queue](output_images/queue.png)
 This helps to detect dashed lines and removes final image jittering. Then I compute [histogram](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/detector.py#L86) and [detect](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/detector.py#L119) two highest peaks in it (keeping in mind that there should be some gap between them).
 
-After peaks detected I launch a sliding window from each peak's X-coordinate. This hepls to separate one line from another and to separate lane pixels from other pixels. Result is separate groups of pixels for left and right lines. Those pixels are then fitted to 2nd degree polynomial via `numpy.polyfit` function.
-To ensure that found lines are actually lane lines I execute 2 simple sanity checks:
+After peaks detected I launch a [sliding window](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/detector.py#L91) from each peak's X-coordinate. This hepls to separate one line from another and to separate lane pixels from other pixels. Result is separate groups of pixels for left and right lines. Those pixels are then [fitted](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/detector.py#L110) to 2nd degree polynomial via `numpy.polyfit` function.
+To ensure that found lines are actually lane lines I [execute](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/detector.py#L61) 2 simple sanity checks:
 1. Distance between lines should be at least 500 pixels
 2. Curvature radius differs no more than 2 times
 
@@ -89,10 +89,11 @@ If new lines fail on those checks or no new lines found at all - I just leave pr
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-Curvature radius is computed by this formula:
+Curvature radius is [computed](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/detector.py#L20) by formula from lecture:
 [formula]
 
-Car offset is computed by this formula: 
+Car offset is [computed](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/pipeline.py#L105) as difference between image center and center between lane lines. I also draw ofsset markers in video. Blue marker denotes image center. And green is computed center between lines. Positive offset value means that car should move right.  
+
 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
