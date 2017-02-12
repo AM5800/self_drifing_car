@@ -10,7 +10,7 @@ Then I prepare object points. Assuming that found image points are mapped to (x,
 
 After all calibration images were processed I use `__object_points` and `__image_points` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result:
 
-![img/calibration.png](img/calibration.png)
+![output_images/calibration.png](output_images/calibration.png)
 
 `ChessboardCalibrator` is also able to save and load computed coefficients to file. Thus actual computation takes place only once.
 
@@ -30,12 +30,12 @@ For both cases I just skip _bad_ images. Because there is more than enough calib
 ####1. Provide an example of a distortion-corrected image.
 To demonstrate this step I just create an instance of ChessboardCalibrator, giving it a calibration data file created at previous step and call `calibrator.undistort(image)`
 
-![Calibration example](img/calibration2.png)
+![Calibration example](output_images/calibration2.png)
 
 ####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 I used a combination of color and brightness/contrast thresholds to generate a binary image ([threshold_lines function](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/threshold.py#L30).  Here's an example of my output for this step.
 
-![threshold example](img/threshold.jpg)
+![threshold example](output_images/threshold.jpg)
 
 ####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
