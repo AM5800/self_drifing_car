@@ -95,6 +95,7 @@ Curvature radius is [computed](https://github.com/AM5800/self_driving_car/blob/m
 
 Car offset is [computed](https://github.com/AM5800/self_driving_car/blob/master/advanced_lanes_detection/pipeline.py#L107) as difference between image center and center between lane lines. I also draw ofsset markers in video. Blue marker denotes image center. And green is computed center between lines. Positive offset value means that car should move right.  
 
+Curvature radius and offset values are converted to meters with corresponding coefficients from the lecture.
 
 ####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
