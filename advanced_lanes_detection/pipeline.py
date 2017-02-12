@@ -56,10 +56,10 @@ def process_image(img):
 
     result = img_to_int(result)
 
+    print_overlay_info(left_line, result, right_line)
+
     if frame == 5:
         save_debug_images(left_line, right_line, result, ploty)
-
-    print_overlay_info(left_line, result, right_line)
 
     return result
 
@@ -93,7 +93,7 @@ def draw_offset_marker(result, x, y, color):
 
 
 def print_overlay_info(left_line, result, right_line):
-    h = img_shape[0] # making measurements at the bottom of the image - where the car is
+    h = img_shape[0]  # making measurements at the bottom of the image - where the car is
 
     ym_per_pix = 30 / 720
     xm_per_pix = 3.7 / 700
@@ -120,5 +120,4 @@ in_video = "input/project_video.mp4"
 main_video = VideoFileClip(in_video)
 main_video = main_video.fl_image(process_image)
 
-
-main_video.write_videofile(out_video, audio=False, fps=1)
+main_video.write_videofile(out_video, audio=False)
