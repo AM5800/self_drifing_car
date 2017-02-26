@@ -3,6 +3,7 @@ import numpy as np
 from skimage.feature import hog
 from typing import Iterable
 import util
+import cv2
 
 
 class ImageFeatureExtractorBase(abc.ABC):
@@ -18,7 +19,8 @@ class HogFeatureExtractor(ImageFeatureExtractorBase):
         self.__orientations = orientations
 
     def extract(self, img):
-        return hog(img, self.__orientations, self.__pixels_per_cell, self.__cells_per_block)
+        grayscale = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        return hog(grayscale, self.__orientations, self.__pixels_per_cell, self.__cells_per_block)
 
 
 class ImageFeatureExtractor(ImageFeatureExtractorBase):

@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from typing import List
 
 
 def try_load_image_float(file_path):
@@ -26,3 +27,15 @@ def img_to_int(img):
         return img
 
     return (img * 255).astype(np.uint8)
+
+
+def parallel_shuffle(values: List[np.array]):
+    if len(values) == 0:
+        return []
+
+    permutation = np.random.permutation(len(values[0]))
+    result = []
+    for value in values:
+        result.append(value[permutation])
+
+    return result
