@@ -1,10 +1,12 @@
-import util
 import glob
-import numpy as np
 import os
-from scipy.misc import imsave
-import scipy
 import shutil
+
+import numpy as np
+import scipy
+from scipy.misc import imsave
+
+import util
 
 
 def load_images(path):
@@ -17,10 +19,10 @@ def load_images(path):
     return np.array(result)
 
 
-def split_to_dataset(input, desired_validation_size, desired_test_size):
-    validation = input[:desired_validation_size]
-    test = input[desired_validation_size:desired_test_size + desired_validation_size]
-    train = input[desired_test_size + desired_validation_size:]
+def split_to_dataset(input_array, desired_validation_size, desired_test_size):
+    validation = input_array[:desired_validation_size]
+    test = input_array[desired_validation_size:desired_test_size + desired_validation_size]
+    train = input_array[desired_test_size + desired_validation_size:]
     return train, validation, test
 
 

@@ -1,20 +1,21 @@
 import abc
-import numpy as np
-from skimage.feature import hog
 from typing import Iterable
-import util
+
 import cv2
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
+import numpy as np
+from skimage.feature import hog
+
+import util
 
 
-class ImageFeatureExtractorBase(abc.ABC):
+class ImageFeatureExtractorInterface(abc.ABC):
     @abc.abstractmethod
     def extract(self, img: np.array) -> np.array:
         pass
 
 
-class HogFeatureExtractor(ImageFeatureExtractorBase):
+class HogFeatureExtractor(ImageFeatureExtractorInterface):
     def __init__(self, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(3, 3)):
         self.__cells_per_block = cells_per_block
         self.__pixels_per_cell = pixels_per_cell
@@ -25,7 +26,7 @@ class HogFeatureExtractor(ImageFeatureExtractorBase):
         return hog(grayscale, self.__orientations, self.__pixels_per_cell, self.__cells_per_block)
 
 
-class HistFeatureExtractor(ImageFeatureExtractorBase):
+class HistFeatureExtractor(ImageFeatureExtractorInterface):
     def extract(self, img: np.array) -> np.array:
         rhist = np.histogram(img[:, :, 0], bins=self.__bins, range=(0.0, 1.0))[0]
         ghist = np.histogram(img[:, :, 1], bins=self.__bins, range=(0.0, 1.0))[0]
@@ -38,7 +39,7 @@ class HistFeatureExtractor(ImageFeatureExtractorBase):
         self.__bins = bins
 
 
-class SpatialBinFeatureExtractor(ImageFeatureExtractorBase):
+class SpatialBinFeatureExtractor(ImageFeatureExtractorInterface):
     def extract(self, img: np.array) -> np.array:
         return cv2.resize(img, (self.__dimension, self.__dimension)).ravel()
 
@@ -47,8 +48,8 @@ class SpatialBinFeatureExtractor(ImageFeatureExtractorBase):
         self.__dimension = dimension
 
 
-class CombiningImageFeatureExtractor(ImageFeatureExtractorBase):
-    def __init__(self, extractors: Iterable[ImageFeatureExtractorBase]):
+class CombiningImageFeatureExtractor(ImageFeatureExtractorInterface):
+    def __init__(self, extractors: Iterable[ImageFeatureExtractorInterface]):
         self.__extractors = extractors
 
     def extract(self, img):

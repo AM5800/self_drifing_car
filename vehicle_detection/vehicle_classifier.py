@@ -1,10 +1,12 @@
 import abc
+
 from sklearn import svm
-import feature_extractor
 from sklearn.preprocessing import StandardScaler
 
+import feature_extractor
 
-class VehicleClassifier(abc.ABC):
+
+class VehicleClassifierInterface(abc.ABC):
     @abc.abstractmethod
     def predict(self, features):
         pass
@@ -14,8 +16,8 @@ class VehicleClassifier(abc.ABC):
         pass
 
 
-class SVMVehicleClassifier(VehicleClassifier):
-    def __init__(self, feature_extractor: feature_extractor.ImageFeatureExtractorBase):
+class SVMVehicleClassifier(VehicleClassifierInterface):
+    def __init__(self, feature_extractor: feature_extractor.ImageFeatureExtractorInterface):
         self.__feature_extractor = feature_extractor
         self.__svc = svm.SVC()
         self.__scaler = None

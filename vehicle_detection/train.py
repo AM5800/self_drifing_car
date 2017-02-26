@@ -1,10 +1,11 @@
 import glob
 import os
-from feature_extractor import *
-import util
-import time
-from vehicle_classifier import *
 import pickle
+import time
+
+import util
+from feature_extractor import *
+from vehicle_classifier import *
 
 
 def load_dataset_paths(path):
@@ -21,18 +22,18 @@ def load_dataset_paths(path):
     return paths, labels
 
 
-def compute_accuracy(model: VehicleClassifier, xs, ys):
+def compute_accuracy(model: VehicleClassifierInterface, xs, ys):
     prediction = model.predict(xs)
     wrongs = np.count_nonzero(ys - prediction)
     total = len(ys)
     return (total - wrongs) / total
 
 
-def save_classifier(classifier: VehicleClassifier):
+def save_classifier(classifier: VehicleClassifierInterface):
     pickle.dump(classifier, open("classifier.p", "wb"))
 
 
-def load_classifier() -> VehicleClassifier:
+def load_classifier() -> VehicleClassifierInterface:
     return pickle.load(open("classifier.p", "rb"))
 
 
