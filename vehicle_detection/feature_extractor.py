@@ -4,6 +4,7 @@ from skimage.feature import hog
 from typing import Iterable
 import util
 import cv2
+import matplotlib.pyplot as plt
 
 
 class ImageFeatureExtractorBase(abc.ABC):
@@ -23,7 +24,29 @@ class HogFeatureExtractor(ImageFeatureExtractorBase):
         return hog(grayscale, self.__orientations, self.__pixels_per_cell, self.__cells_per_block)
 
 
-class ImageFeatureExtractor(ImageFeatureExtractorBase):
+class HistFeatureExtractor(ImageFeatureExtractorBase):
+    def extract(self, img: np.array) -> np.array:
+        rhist = np.histogram(img[:, :, 0], bins=self.__bins, range=(0.0, 1.0))[0]
+        ghist = np.histogram(img[:, :, 1], bins=self.__bins, range=(0.0, 1.0))[0]
+        bhist = np.histogram(img[:, :, 2], bins=self.__bins, range=(0.0, 1.0))[0]
+
+        return np.concatenate([rhist, ghist, bhist]).astype(np.float32)
+
+    def __init__(self, bins=32, colorspace="RGB"):
+        self.__colorspace = colorspace
+        self.__bins = bins
+
+
+class SpatialBinFeatureExtractor(ImageFeatureExtractorBase):
+    def extract(self, img: np.array) -> np.array:
+        return cv2.resize(img, (self.__dimension, self.__dimension)).ravel()
+
+    def __init__(self, dimension=32, colorspace="RGB"):
+        self.__colorspace = colorspace
+        self.__dimension = dimension
+
+
+class CombiningImageFeatureExtractor(ImageFeatureExtractorBase):
     def __init__(self, extractors: Iterable[ImageFeatureExtractorBase]):
         self.__extractors = extractors
 
@@ -33,6 +56,8 @@ class ImageFeatureExtractor(ImageFeatureExtractorBase):
 
 
 if __name__ == "__main__":
-    img = util.load_image_float("dataset/train/vehicle1.png")[:, :, 0]
-    extractor = ImageFeatureExtractor([HogFeatureExtractor()])
-    print(extractor.extract(img).shape)
+    img = util.load_image_float("dataset/train/vehicle2.png")
+    plt.imshow(img)
+    plt.show()
+    extractor = CombiningImageFeatureExtractor([SpatialBinFeatureExtractor()])
+    print(extractor.extract(img))

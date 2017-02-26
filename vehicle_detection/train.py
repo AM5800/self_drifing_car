@@ -4,11 +4,13 @@ from feature_extractor import *
 import util
 from sklearn.preprocessing import StandardScaler
 from sklearn import svm
+import time
 
 
 def load_dataset_paths(path):
-    vehicles = glob.glob(os.path.join(path, "vehicle*"))
-    non_vehicles = glob.glob(os.path.join(path, "non-vehicle*"))
+    limit = 100000
+    vehicles = glob.glob(os.path.join(path, "vehicle*"))[:limit]
+    non_vehicles = glob.glob(os.path.join(path, "non-vehicle*"))[:limit]
 
     vehicle_labels = np.array(list(map(lambda x: 0, vehicles)))
     non_vehicle_labels = np.array(list(map(lambda x: 1, non_vehicles)))
@@ -36,18 +38,22 @@ def extract_features(img_paths, feature_extractor: ImageFeatureExtractorBase, sc
 
 def evaluate_svm(model, xs, ys):
     prediction = model.predict(xs)
-    accuracy = np.dot(prediction, ys)
-
-    return accuracy / len(ys)
+    wrongs = np.count_nonzero(ys - prediction)
+    total = len(ys)
+    return (total - wrongs) / total
 
 
 if __name__ == "__main__":
-    extractor = HogFeatureExtractor()
+    hog_extractor = HogFeatureExtractor()
+    hist_extractor = HistFeatureExtractor(16)
+    sb_extractor = SpatialBinFeatureExtractor(16)
+
+    extractor = CombiningImageFeatureExtractor([hog_extractor, hist_extractor, sb_extractor])
 
     train_X, train_y = load_dataset_paths("dataset/train")
     train_X = extract_features(train_X, extractor)
 
-    print(train_X.shape)
+    print("trainset shape:", train_X.shape)
 
     scaler = StandardScaler().fit(train_X)
     train_X = scaler.transform(train_X)
@@ -57,7 +63,11 @@ if __name__ == "__main__":
     valid_X, valid_y = load_dataset_paths("dataset/valid")
     valid_X = extract_features(valid_X, extractor, scaler)
 
+    print("Training...")
+    t0 = time.time()
     clf = svm.SVC()
     clf.fit(train_X, train_y)
 
-    print(evaluate_svm(clf, valid_X, valid_y))
+    print("\n\nElapsed", time.time() - t0)
+
+    print("Accuracy:", evaluate_svm(clf, valid_X, valid_y))
