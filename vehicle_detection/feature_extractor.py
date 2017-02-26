@@ -5,6 +5,7 @@ from typing import Iterable
 import util
 import cv2
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
 
 
 class ImageFeatureExtractorBase(abc.ABC):
@@ -61,3 +62,15 @@ if __name__ == "__main__":
     plt.show()
     extractor = CombiningImageFeatureExtractor([SpatialBinFeatureExtractor()])
     print(extractor.extract(img))
+
+
+def load_images_and_extract(feature_extractor, img_paths):
+    result_features = []
+    for img_path in img_paths:
+        img = util.load_image_float(img_path)
+        features = feature_extractor.extract(img)
+        result_features.append(features)
+
+    result = np.array(result_features)
+
+    return result
