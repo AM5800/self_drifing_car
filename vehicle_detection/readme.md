@@ -1,9 +1,3 @@
-###Writeup / README
-
-####1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.  
-
-You're reading it!
-
 ###Histogram of Oriented Gradients (HOG)
 
 ####1. Explain how (and identify where in your code) you extracted HOG features from the training images.
