@@ -2,14 +2,12 @@ import glob
 import os
 import pickle
 import time
-
-import util
 from feature_extractor import *
 from vehicle_classifier import *
 
 
 def load_dataset_paths(path):
-    limit = 50
+    limit = 50000
     vehicles = glob.glob(os.path.join(path, "vehicle*"))[:limit]
     non_vehicles = glob.glob(os.path.join(path, "non-vehicle*"))[:limit]
 
@@ -29,17 +27,9 @@ def compute_accuracy(model: VehicleClassifierInterface, xs, ys):
     return (total - wrongs) / total
 
 
-def save_classifier(classifier: VehicleClassifierInterface):
-    pickle.dump(classifier, open("classifier.p", "wb"))
-
-
-def load_classifier() -> VehicleClassifierInterface:
-    return pickle.load(open("classifier.p", "rb"))
-
-
 if __name__ == "__main__":
-    hog_extractor = HogFeatureExtractor()
-    hist_extractor = HistFeatureExtractor(16)
+    hog_extractor = HogFeatureExtractor(9, (8, 8), (2, 2))
+    hist_extractor = HistFeatureExtractor(16, "HSV")
     sb_extractor = SpatialBinFeatureExtractor(16)
 
     extractor = CombiningImageFeatureExtractor([hog_extractor, hist_extractor, sb_extractor])
@@ -54,7 +44,7 @@ if __name__ == "__main__":
     classifier = SVMVehicleClassifier(extractor)
     classifier.fit(train_X, train_y)
 
-    save_classifier(classifier)
+    pickle.dump(classifier, open("classifier.p", "wb"))
 
     print("Elapsed:", time.time() - t0)
     print("Accuracy:", compute_accuracy(classifier, valid_X, valid_y))

@@ -26,13 +26,26 @@ class HogFeatureExtractor(ImageFeatureExtractorInterface):
         return hog(grayscale, self.__orientations, self.__pixels_per_cell, self.__cells_per_block)
 
 
+def to_colorspace(colorspace, img):
+    if colorspace == "RGB":
+        return img
+    if colorspace == "HSV":
+        return cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+    if colorspace == "LUV":
+        return cv2.cvtColor(img, cv2.COLOR_RGB2LUV)
+
+    return None
+
+
 class HistFeatureExtractor(ImageFeatureExtractorInterface):
     def extract(self, img: np.array) -> np.array:
-        rhist = np.histogram(img[:, :, 0], bins=self.__bins, range=(0.0, 1.0))[0]
-        ghist = np.histogram(img[:, :, 1], bins=self.__bins, range=(0.0, 1.0))[0]
-        bhist = np.histogram(img[:, :, 2], bins=self.__bins, range=(0.0, 1.0))[0]
+        img = to_colorspace(self.__colorspace, img)
+        result = []
+        for i in range(img.shape[2]):
+            hist = np.histogram(img[:, :, 0], bins=self.__bins, range=(0.0, 1.0))[0]
+            result.extend(hist)
 
-        return np.concatenate([rhist, ghist, bhist]).astype(np.float32)
+        return np.array(result)
 
     def __init__(self, bins=32, colorspace="RGB"):
         self.__colorspace = colorspace
@@ -57,14 +70,6 @@ class CombiningImageFeatureExtractor(ImageFeatureExtractorInterface):
         return np.concatenate(features)
 
 
-if __name__ == "__main__":
-    img = util.load_image_float("dataset/train/vehicle2.png")
-    plt.imshow(img)
-    plt.show()
-    extractor = CombiningImageFeatureExtractor([SpatialBinFeatureExtractor()])
-    print(extractor.extract(img))
-
-
 def load_images_and_extract(feature_extractor, img_paths):
     result_features = []
     for img_path in img_paths:
@@ -75,3 +80,10 @@ def load_images_and_extract(feature_extractor, img_paths):
     result = np.array(result_features)
 
     return result
+
+if __name__ == "__main__":
+    img = util.load_image_float("dataset/train/vehicle2.png")
+    plt.imshow(img)
+    plt.show()
+    extractor = CombiningImageFeatureExtractor([SpatialBinFeatureExtractor()])
+    print(extractor.extract(img))

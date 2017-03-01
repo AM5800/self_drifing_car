@@ -49,7 +49,7 @@ def prepare_dataset(vehicles_path, non_vehicles_path, output_path):
     np.random.shuffle(non_vehicles)
 
     desired_validation_size = 1000
-    desired_test_size = 1000
+    desired_test_size = 0
 
     v_train, v_valid, v_test = split_to_dataset(vehicles, desired_validation_size, desired_test_size)
     nv_train, nv_valid, nv_test = split_to_dataset(non_vehicles, desired_validation_size, desired_test_size)
