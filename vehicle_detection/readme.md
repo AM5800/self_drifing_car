@@ -23,9 +23,14 @@ I then explored different color spaces and different `skimage.hog()` parameters 
 
 I tried various combination of parameters and estimated their efficiency through testing on validation dataset. Manual grid search, if you like.
 
+I didn't try much parameters combination because I reached 99% accuracy pretty fast.
+
+After reaching 99% accuracy I have concentrated on feature number optimization. So I ended with ... HOG-features per 64x64 image
+
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
-I trained a linear SVM using...
+For classifier I used HOG, color histogram and spatial binning features. Total number of features is ...
+`CombiningImageFeatureExtractor` class allows me to combine any feature extractors in various combinations. And again, I estimated feature extractors' efficiency through validation error
 
 ###Sliding Window Search
 
