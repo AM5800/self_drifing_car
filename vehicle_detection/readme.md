@@ -36,7 +36,10 @@ For classifier I used HOG, color histogram and spatial binning features. Total n
 
 ####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
-I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
+I have used 3 types of windows. Each image size for detecting vehicles on different distances. Sizes of windows were chosen as powers of 2. Namely 32x32, 64x64, 128x128. This is beneficial because:
+* Integral number of such windows can fit to image width (1280)
+* Classifier is trained for 64x64 images. So by using window of same size I can avoid scaling
+* Up/Down scaling is more efficient and lossless if both image sizes are powers of 2
 
 ![alt text][image3]
 
