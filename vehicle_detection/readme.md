@@ -70,17 +70,17 @@ Then I thresholded resulting heatmap and used `scipy.ndimage.measurements.label(
 
 Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
 
-### Here are six frames and their corresponding heatmaps:
+Here is a sample image from video:
+![alt text](output_images/frame0.png")
 
-![alt text][image5]
+Heatmap integrated on this and 9 previous frames:
+![alt text](output_images/heat0.png")
 
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
-![alt text][image6]
+Output of `scipy.ndimage.measurements.label()`
+![alt text](output_images/labels0.png")
 
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
-![alt text][image7]
-
-
+And resulting image with bounding boxes:
+![alt text](output_images/result0.png")
 
 ---
 
