@@ -63,7 +63,7 @@ Here's a [link to my video result](./project_video_result.mp4)
 
 ####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
 
-I recorded the positions of positive detections in each frame of the video. After that for each 10 consequtive frames I computed heatmap like this:
+I recorded the positions of positive detections in each frame of the video. After that for each 10 consequtive frames I computed [heatmap](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/pipeline.py#L99) like this:
 
 1. all boxes within one frame are painted with one color
 2. "local heatmaps" from p1 were added together to form final heatmap
