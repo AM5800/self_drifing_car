@@ -3,7 +3,6 @@ from queue import deque
 
 import util
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 from moviepy.editor import *
 from vehicle_classifier import VehicleClassifierInterface
@@ -101,8 +100,10 @@ class VehicleTracker:
         heatmap = np.zeros(self.__img_size)
 
         for detections in self.__detections_queue:
+            local_heatmap = np.zeros(self.__img_size)
             for bbox in detections:
-                heatmap[bbox[0][1]:bbox[1][1], bbox[0][0]:bbox[1][0]] += 0.01
+                local_heatmap[bbox[0][1]:bbox[1][1], bbox[0][0]:bbox[1][0]] = 0.1
+            heatmap += local_heatmap
 
         heatmap[heatmap <= self.__heat_threshold] = 0
 
@@ -134,15 +135,13 @@ def process_image(img, tracker: VehicleTracker):
 if __name__ == "__main__":
     img_size = (720, 1280)
     classifier = pickle.load(open("classifier.p", "rb"))
-    tracker = VehicleTracker(10, img_size, classifier, 0.1)
+    tracker = VehicleTracker(10, img_size, classifier, 0.6)
 
     in_video = "project_video.mp4"
     out_video = "result.mp4"
 
     main_video = VideoFileClip(in_video)
     main_video = main_video.fl_image(lambda img: process_image(img, tracker))
-    #
-    # main_video.write_videofile(out_video, audio=False, fps=4)
     main_video.write_videofile(out_video, audio=False)
 
     # img = util.load_image_float("test_images/test7.png")
