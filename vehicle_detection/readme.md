@@ -11,7 +11,7 @@ I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an 
 I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`). Here is an example using the `grayscale` color space and HOG parameters of `orientations=9`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
 
 
-![alt text][image2]
+![alt text](output_images/hog_example.png)
 
 ####2. Explain how you settled on your final choice of HOG parameters.
 
