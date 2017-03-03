@@ -40,7 +40,7 @@ Next are example images, showing each layer's position and density:
 ![alt text](output_images/window_middle.png)
 ![alt text](output_images/window_near.png)
 
-[Main search window function](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/pipeline.py#L38)
+[Main search window function](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/pipeline.py#L51)
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
