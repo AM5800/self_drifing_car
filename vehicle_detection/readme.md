@@ -24,7 +24,7 @@ After reaching 99% accuracy I have concentrated on feature number optimization. 
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
 For classifier I used HOG, color histogram and spatial binning features. Total number of features is *2580*
-`CombiningImageFeatureExtractor` class allows me to combine any feature extractors in various combinations. And again, I estimated feature extractors' efficiency through validation error
+`CombiningImageFeatureExtractor` class allows me to combine any feature extractors in various combinations. And again, I estimated feature extractors' efficiency through validation error. Hog alone gives 97-98% accuracy. 
 
 ###Sliding Window Search
 
