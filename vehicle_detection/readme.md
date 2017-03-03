@@ -42,10 +42,16 @@ Next are example images, showing each layer's position and density:
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
-Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
+Ultimately I searched on three scales using grayscale single-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result. 
 
-![alt text][image4]
----
+I tried to find an optimal balance between accuracy and evaluation speed. This was mostly a trial and error process: I captured few frames from the video with different car positions. And tried to make my far/middle/near windows detect it by changing sizes of the windows, overlapping and height.
+
+Here are some example images:
+
+![alt text](output_images/window_result1.png)
+![alt text](output_images/window_result2.png)
+![alt text](output_images/window_result3.png)
+
 
 ### Video Implementation
 
