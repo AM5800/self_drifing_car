@@ -36,9 +36,9 @@ I have used 3 types of windows. Each image size for detecting vehicles on differ
 * Up/Down scaling is more efficient and lossless if both image sizes are powers of 2
 
 Next are example images, showing each layer's position and density:
-![alt text][output_images/window_far.png]
-![alt text][output_images/window_middle.png]
-![alt text][output_images/window_near.png]
+![alt text](output_images/window_far.png)
+![alt text](output_images/window_middle.png)
+![alt text](output_images/window_near.png)
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
