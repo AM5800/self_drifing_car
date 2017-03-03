@@ -2,7 +2,7 @@
 
 ####1. Explain how (and identify where in your code) you extracted HOG features from the training images.
 
-The code for this step is contained in ...
+The code for this step is contained in file [feature_extractor.py](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/feature_extractor.py#L18)
 
 I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
 
@@ -23,14 +23,14 @@ After reaching 99% accuracy I have concentrated on feature number optimization. 
 
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
-For classifier I used HOG, color histogram and spatial binning features. Total number of features is *2580*
-`CombiningImageFeatureExtractor` class allows me to combine any feature extractors in various combinations. And again, I estimated feature extractors' efficiency through validation error. Hog alone gives 97-98% accuracy. 
+For classifier I used [HOG, color histogram and spatial binning features](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/classify.py#L35). Total number of features is *2580*
+[CombiningImageFeatureExtractor](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/classify.py#L35) class allows me to combine any feature extractors in various combinations. And again, I estimated feature extractors' efficiency through validation error. Hog alone gives 97-98% accuracy. 
 
 ###Sliding Window Search
 
 ####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
-I have used 3 types of windows. Each image size for detecting vehicles on different distances. Sizes of windows were chosen as powers of 2. Namely 32x32, 64x64, 128x128. This is beneficial because:
+I have used 3 types of windows. Each image size for detecting vehicles on different distances. Sizes of windows were chosen as powers of 2. Namely [32x32](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/pipeline.py#L12), [64x64](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/pipeline.py#L25), [128x128](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/pipeline.py#L38). This is beneficial because:
 * Integral number of such windows can fit to image width (1280)
 * Classifier is trained for 64x64 images. So by using window of same size I can avoid scaling
 * Up/Down scaling is more efficient and lossless if both image sizes are powers of 2
@@ -39,6 +39,8 @@ Next are example images, showing each layer's position and density:
 ![alt text](output_images/window_far.png)
 ![alt text](output_images/window_middle.png)
 ![alt text](output_images/window_near.png)
+
+[Main search window function](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/pipeline.py#L38)
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
