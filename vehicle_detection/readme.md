@@ -19,7 +19,7 @@ I tried various combination of parameters and estimated their efficiency through
 
 I didn't try much parameters combination because I reached 99% accuracy pretty fast.
 
-After reaching 99% accuracy I have concentrated on feature number optimization. So I ended with ... HOG-features per 64x64 image
+After reaching 99% accuracy I have concentrated on feature number optimization. So I ended with *1764* HOG-features per 64x64 image
 
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
