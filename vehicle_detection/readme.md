@@ -25,8 +25,11 @@ Grayscale colorspace was chosen because it minimizes number of features and imag
 
 ####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
-For classifier I used [HOG, color histogram and spatial binning features](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/classify.py#L35). Total number of features is *2580*
-[CombiningImageFeatureExtractor](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/classify.py#L35) class allows me to combine any feature extractors in various combinations. And again, I estimated feature extractors' efficiency through validation error. Hog alone gives 97-98% accuracy. 
+I used [SVM](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/vehicle_classifier.py#L26) as classifier. 
+Next I selected [HOG, color histogram and spatial binning features](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/classify.py#L35) as input features(Total number of features is *2580*), then I [normalized](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/vehicle_classifier.py#L41) data. And finally I [fed it to the SVM](https://github.com/AM5800/self_driving_car/blob/master/vehicle_detection/vehicle_classifier.py#L44)
+
+I experimented a lot with different feature extractors. 
+Grayscale hog alone gives 97-98% accuracy. By adding other mentioned features I was able to achieve 99% accuracy on validation dataset
 
 ###Sliding Window Search
 
