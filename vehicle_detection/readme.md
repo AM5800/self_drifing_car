@@ -88,5 +88,19 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+The hardest part in this project was sliding window and heatmap adjustments. For heatmap I first tried approach described in lectures (where each detection contributed in the final heatmap). But this yielded poor results for me. Because for some car I had 10+ detections in one frame. While for other 1-2. It was very hard to find optimal threshold value to remove false positives and not remove actual cars. 
+
+Also you can notice in the video that cars that slowly approach from right are not detected until their rear part appears. This is due to the lack of such images of cars in the training set. Sometimes it is detected (mostly due to hist features, I think) sometimes not.
+
+Provided implementation will fail:
+- If tried to run in real-time (It is very slow right now)
+- It will definitely has problems detecting cars that are differently oriented (for example on a crossroads)
+- There might be other obstacles on road - people, cyclists, bikers, road works or even other types of cars (buses, trucks etc)
+- During rain reflections might confuse algorithm.
+
+I have some ideas to improve:
+1. Cars don't appear from nowhere. They appear from sides if they overtake or from "horizon" if we a catching up. So it might be a good speedup if we try to track new cars in mentioned regions and not in the whole image
+2. Compute HOG features once for each frame as mentioned in lectures
+3. Add some jittering to training set
+4. After car is detected - try to search it's exact bounds by launching additional search window in region
 
